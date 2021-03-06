@@ -1,0 +1,9 @@
+[Unit]
+Description=myapp
+After=syslog.target
+
+[Service]
+ExecStart=java -jar /opt/demoApp/demo.jar
+
+[Install]
+WantedBy=multi-user.target
