@@ -1,19 +1,15 @@
 <template>
   <div>
-    <div v-for="(message, index) in messages" :key="index">
-      {{message.message}}<br>
-    </div>
-    <button @click="loadMessagesFromBackend()">Reload message</button>
-
+    <input type="text" v-model="username" placeholder="Username">
     <br><br>
-    <h2>Post new message:</h2>
-    <input type="text" v-model="newMessage">
-    <button @click="postToBackend()">Post</button>
+    <input type="password" v-model="password" placeholder="password">
+    <br>
+    <router-link to="/Profile" tag="button">Log in</router-link>
   </div>
 </template>
 
 <script>
-export default {
+/*export default {
   name: 'HelloWorld',
   data: function() {
     return {
@@ -34,8 +30,8 @@ export default {
       this.newMessage = '';
     }
   }
-}
+}*/
 </script>
 
-<style scoped>
-</style>
+/*<style scoped>
+</style>*/
