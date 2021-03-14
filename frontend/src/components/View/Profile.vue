@@ -1,5 +1,7 @@
 <template>
     <div>
+      <router-link to="/" tag="button" class="logout">Logga ut</router-link>
+      <br>
         <h1>Bo Dahl</h1>
         <button @click="postToBackend()" class="button button1">Follow Bosse</button>
         <br>
@@ -52,4 +54,7 @@ export default {
     display:inline-block; 
     margin-left: 10px; 
 }
+.logout{
+			float: right;
+		}
 </style>
