@@ -5,23 +5,20 @@
         <br>
         <br>
         <p>
-            <router-link to="/">
+            <router-link to="follows">
                 Followers <span class="tab1">77</span>
             </router-link>
             <span class="tab2">
-                <router-link to="/">
+                <router-link to="follows">
                     Following<span class="tab1">22</span>
                 </router-link>
             </span>
         </p>
         <br>
-        <div class="descriptionarea">
-            <span><h4>Messages:</h4></span>
-                <textarea type="text" v-model="newMessage" placeholder="Write your message" rows="10" cols="40"/>
-                <span class="buttonfortxtarea">
-                    <button @click="postToBackend()" class="button button1">Send</button>
-                </span>
-        </div>
+            <router-link to="messages"><h3>Messages:</h3></router-link>
+        <div id="app">
+          <router-view></router-view>
+      </div>
     </div>
 </template>
 
@@ -54,8 +51,5 @@ export default {
 .tab1 { 
     display:inline-block; 
     margin-left: 10px; 
-}
-textarea {
-resize: none;
 }
 </style>

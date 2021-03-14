@@ -6,11 +6,17 @@
       <input type="password" v-model="password" placeholder="Password" style="width: 300px;">
       <br>
       <span class="buttonfortxtarea">
-        <router-link to="/profile" tag="button" class="button button1">Log in</router-link>
+        <router-link to="/messages" tag="button" class="button button1">Log in</router-link>
       </span>
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  
+}
+</script>
 
 <style scoped>
 input[type=text], input[type=password] {
