@@ -14,7 +14,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
-
+    private Integer credentialId;
 
     public Integer getId() {
         return id;
@@ -48,4 +48,11 @@ public class User {
         this.email = email;
     }
 
+    public Integer getCredentialId() {
+        return credentialId;
     }
+
+    public void setCredentialId(Integer credentialId) {
+        this.credentialId = credentialId;
+    }
+}

@@ -11,8 +11,7 @@ public class Credential {
    @Id
    @GeneratedValue(strategy = GenerationType.AUTO)
    private Integer id;
-   private String password;
-   private Integer userId;
+   private String credential;
 
     public Integer getId() {
         return id;
@@ -22,19 +21,11 @@ public class Credential {
         this.id = id;
     }
 
-    public String getPassword() {
-        return password;
+    public String getCredential() {
+        return credential;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setCredential(String credential) {
+        this.credential = credential;
     }
 }
