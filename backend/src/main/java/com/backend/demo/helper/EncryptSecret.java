@@ -16,7 +16,7 @@ public class EncryptSecret {
     private static final int ITERATIONS = 1000;
     private static final int KEY_LENGTH = 256;
 
-    public static String getSalt(int length) {
+    public String getSalt(int length) {
         StringBuilder returnValue = new StringBuilder(length);
 
         for (int i = 0; i < length; i++) {
@@ -25,7 +25,7 @@ public class EncryptSecret {
         return new String(returnValue);
     }
 
-    public static byte[] hash(char[] secret, byte[] salt) {
+    public byte[] hash(char[] secret, byte[] salt) {
         PBEKeySpec spec = new PBEKeySpec(secret, salt, ITERATIONS, KEY_LENGTH);
         Arrays.fill(secret, Character.MIN_VALUE);
         try {
@@ -38,16 +38,16 @@ public class EncryptSecret {
         }
     }
 
-    public static String generateSecurePassword(String secret, String salt) {
+    public String generateSecureSecret(String secret, String salt) {
         String returnValue = null;
         byte [] secureSecret = hash(secret.toCharArray(), salt.getBytes());
         returnValue = Base64.getEncoder().encodeToString(secureSecret);
         return returnValue;
     }
 
-    public static boolean verifyUserSecret(String provideSecret, String secureSecret, String salt) {
+    public boolean verifyUserSecret(String provideSecret, String secureSecret, String salt) {
         boolean returnValue = false;
-        String newSecurePassword = generateSecurePassword(provideSecret, salt);
+        String newSecurePassword = generateSecureSecret(provideSecret, salt);
         returnValue = newSecurePassword.equalsIgnoreCase(secureSecret);
         return returnValue;
     }

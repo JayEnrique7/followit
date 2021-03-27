@@ -3,17 +3,20 @@ package com.backend.demo.dto;
 import javax.persistence.*;
 
 @Entity
-@Table(name = User.TABLE_NAME)
+@Table(name = "user")
 public class User {
-
-    public static final String TABLE_NAME = "user";
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(unique = true, name = "id")
     private Integer id;
+    @Column(name = "first_name")
     private String firstName;
+    @Column(name = "last_name")
     private String lastName;
+    @Column(unique = true, name = "email")
     private String email;
+    @Column(unique = true, name = "credential_id")
     private Integer credentialId;
 
     public Integer getId() {

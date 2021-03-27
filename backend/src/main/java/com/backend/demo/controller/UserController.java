@@ -1,31 +1,25 @@
 package com.backend.demo.controller;
 
+import com.backend.demo.controller.api.BaseControllerApi;
+import com.backend.demo.controller.domain.UserLogin;
+import com.backend.demo.controller.service.UserService;
 import com.backend.demo.dto.User;
-import com.backend.demo.dto.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/")
-public class UserController {
+import javax.validation.constraints.NotNull;
 
-    @Autowired
-    private UserRepository userRepository;
+import java.util.List;
 
-    /*@PostMapping(path = "/add")
-    public @ResponseBody String addNewUser(@RequestParam String firstName,
-                                           @RequestParam String lastName,
-                                           @RequestParam String email) {
-        User newUser = new User();
-        newUser.setFirstName(firstName);
-        newUser.setLastName(lastName);
-        newUser.setEmail(email);
-        return "Saved";
-    }*/
+@RestController
+public class UserController extends BaseControllerApi<UserService> {
 
-    @GetMapping(path = "user/all")
-    public @ResponseBody Iterable<User> getAllUsers() {
-        return userRepository.findAll();
+    public UserController(UserService userService){
+        super(userService);
+    }
+
+    @CrossOrigin
+    @PostMapping(value = "/login")
+    public List<User> login(@RequestBody @NotNull UserLogin userLogin) {
+        return getService().findCredentialId(userLogin);
     }
 }
