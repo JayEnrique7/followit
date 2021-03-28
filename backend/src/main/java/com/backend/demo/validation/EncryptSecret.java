@@ -1,4 +1,4 @@
-package com.backend.demo.helper;
+package com.backend.demo.validation;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;

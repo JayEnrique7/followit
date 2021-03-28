@@ -1,4 +1,4 @@
-package com.backend.demo.controller.domain;
+package com.backend.demo.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

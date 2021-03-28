@@ -1,8 +1,8 @@
 package com.backend.demo.controller;
 
 import com.backend.demo.controller.api.BaseControllerApi;
-import com.backend.demo.controller.domain.UserLogin;
-import com.backend.demo.controller.service.UserService;
+import com.backend.demo.domain.UserLogin;
+import com.backend.demo.service.UserService;
 import com.backend.demo.dto.User;
 import org.springframework.web.bind.annotation.*;
 
