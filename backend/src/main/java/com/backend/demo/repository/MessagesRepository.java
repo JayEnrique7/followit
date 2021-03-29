@@ -1,4 +1,4 @@
-package com.backend.demo.dto.repository;
+package com.backend.demo.repository;
 
 import com.backend.demo.dto.Messages;
 import org.springframework.data.repository.CrudRepository;

@@ -10,8 +10,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class CreateJWTTest {
@@ -30,9 +32,10 @@ public class CreateJWTTest {
         String name = "Quagmire";
         Date iat = new Date();
         Date exp = new Date();
-        int randomMinutes = (int) (Math.random() * (59 - 1)) + 1;
 
-        String jwtToken = createJWT.createJWT(id, false, name, sub, randomMinutes);
+        String jwtToken = createJWT.createJWT(id, false, name, sub);
+
+        System.out.println(jwtToken);
 
         createJWT.getMapFromIoJsonWebTokenClaims(jwtToken).forEach(
                 (key, value) -> {
@@ -57,8 +60,9 @@ public class CreateJWTTest {
                 });
 
         long diffInMillis = Math.abs(exp.getTime() - iat.getTime());
-        int diff = (int) TimeUnit.MINUTES.convert(diffInMillis, TimeUnit.MILLISECONDS);
+        int diff = (int) TimeUnit.HOURS.convert(diffInMillis, TimeUnit.MILLISECONDS);
 
-        assertEquals(randomMinutes, diff);
+        assertThat(iat.before(exp), is(true));
+        assertEquals(12, diff);
     }
 }

@@ -1,4 +1,4 @@
-package com.backend.demo.dto.repository;
+package com.backend.demo.repository;
 
 import com.backend.demo.dto.Credential;
 import org.springframework.data.repository.CrudRepository;

@@ -1,7 +1,7 @@
 package com.backend.demo.dto;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 @Table(name = "token")
@@ -17,13 +17,11 @@ public class Token {
     private Date date;
     @Column(unique = true, name = "user_id")
     private Integer userId;
+    @Column(unique = true, name = "token_id")
+    private String tokenId;
 
     public Integer getId() {
         return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getToken() {
@@ -48,5 +46,13 @@ public class Token {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public String getTokenId() {
+        return tokenId;
+    }
+
+    public void setTokenId(String tokenId) {
+        this.tokenId = tokenId;
     }
 }

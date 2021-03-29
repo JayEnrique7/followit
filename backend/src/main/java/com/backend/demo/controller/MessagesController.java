@@ -1,7 +1,7 @@
 package com.backend.demo.controller;
 
 import com.backend.demo.dto.Messages;
-import com.backend.demo.dto.repository.MessagesRepository;
+import com.backend.demo.repository.MessagesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
