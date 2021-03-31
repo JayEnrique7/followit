@@ -1,4 +1,4 @@
-package com.backend.demo.exceptions;
+package com.backend.demo.exceptions.attributes;
 
 import lombok.Data;
 
@@ -6,5 +6,4 @@ import lombok.Data;
 public class ExceptionResponse {
     private String errorCode;
     private String errorMessage;
-    private String notAuthorized;
 }

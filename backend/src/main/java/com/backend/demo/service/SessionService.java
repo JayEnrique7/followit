@@ -4,8 +4,7 @@ import com.backend.demo.config.CreateJWT;
 import com.backend.demo.domain.SessionDomain;
 import com.backend.demo.dto.Session;
 import com.backend.demo.dto.User;
-import com.backend.demo.exceptions.ResourceNotFoundException;
-import com.backend.demo.exceptions.UnauthorizedException;
+import com.backend.demo.exceptions.Unauthorized;
 import com.backend.demo.repository.SessionRepository;
 import com.backend.demo.repository.UserRepository;
 import com.backend.demo.validation.EncryptSecret;
@@ -30,14 +29,14 @@ public class SessionService {
             createSession(user.getId(), user.getFirstName() + " " + user.getLastName(), user.getEmail());
             return sessionRepository.findSessionByUserId(user.getId()).stream().iterator().next();
         }
-        throw new ResourceNotFoundException("The data does not found");
+        throw new Unauthorized("Unauthorized user");
     }
 
     private User findUser(String email) {
         if (userRepository.findUserByEmail(email).iterator().hasNext()) {
             return userRepository.findUserByEmail(email).iterator().next();
         }
-        throw new UnauthorizedException();
+        throw new Unauthorized("Unauthorized user");
     }
 
     private boolean secretReview(String credential, String secret) {

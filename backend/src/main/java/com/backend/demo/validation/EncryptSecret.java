@@ -1,5 +1,7 @@
 package com.backend.demo.validation;
 
+import com.backend.demo.exceptions.UnexpectedError;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -32,7 +34,7 @@ public class EncryptSecret {
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             return skf.generateSecret(spec).getEncoded();
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new AssertionError("Error while hashing the secret: " + e.getMessage(), e);
+            throw new UnexpectedError("Unexpected error");
         } finally {
             spec.clearPassword();
         }

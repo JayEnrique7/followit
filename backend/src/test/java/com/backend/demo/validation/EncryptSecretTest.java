@@ -23,26 +23,9 @@ public class EncryptSecretTest {
     @Test
     public void generateCrypto() {
         String secret = "hejhej";
-
-        // Salt value stored in database
         String salt = encryptSecret.getSalt(50);
-
-
-
-        // Encrypted and Base64 encoded password read from database
         String secureSecret = encryptSecret.generateSecureSecret(secret, salt);
-
-        /*String pass = "VmsHYtGwZKcOkK3jc3CjgIbCCLklE0DPwdv53IpuYxY=2b2zDcuXaQzp0emsT1fe06z241jg61CeLbELTa5PUySZey1234";
-        String se = pass.split("(?<==)")[0];
-        String sa = pass.split("(?<==)")[1];*/
-
-        //System.out.println(securePassword);
-        //System.out.println(salt);
-
-        boolean passwordMatch = encryptSecret.verifyUserSecret(secret, secureSecret, salt);
-
-        assertTrue(passwordMatch);
-
+        assertTrue(encryptSecret.verifyUserSecret(secret, secureSecret, salt));
     }
 
 }

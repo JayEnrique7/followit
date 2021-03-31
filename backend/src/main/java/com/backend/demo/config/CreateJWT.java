@@ -2,6 +2,7 @@ package com.backend.demo.config;
 
 import java.nio.charset.StandardCharsets;
 
+import com.backend.demo.exceptions.UnexpectedError;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -71,6 +72,6 @@ public class CreateJWT {
                 return entry.getValue().toString();
             }
         }
-        return "";
+        throw new UnexpectedError("Unexpected error");
     }
 }
