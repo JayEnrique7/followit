@@ -4,9 +4,10 @@ import java.nio.charset.StandardCharsets;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
+
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.UUID;
 import java.util.Map;
 
 import io.jsonwebtoken.Jwts;
@@ -19,15 +20,15 @@ public class CreateJWT {
         return Jwts.builder()
                 .setSubject(subject)
                 .setId(id)
-                .setIssuedAt(addMinutes(0))
-                .setExpiration(addMinutes(12))
+                .setIssuedAt(addHours(0))
+                .setExpiration(addHours(12))
                 .claim("name", name)
                 .claim("admin", admin)
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY.getBytes(StandardCharsets.UTF_8))
                 .compact();
     }
 
-    private Date addMinutes(int hours) {
+    private Date addHours(int hours) {
         Calendar now = Calendar.getInstance();
         now.add(Calendar.HOUR, hours);
         return now.getTime();
@@ -39,12 +40,37 @@ public class CreateJWT {
                 .parseClaimsJws(jwt).getBody();
     }
 
-    public Map<String, Object> getMapFromIoJsonWebTokenClaims(String jwt){
+    public String getSub(String jwt) {
+        return getMapFromIoJsonWebTokenClaims(jwt, "sub");
+    }
+
+    public UUID getJti(String jwt) {
+        return UUID.fromString(getMapFromIoJsonWebTokenClaims(jwt, "jti"));
+    }
+
+    public String getName(String jwt) {
+        return getMapFromIoJsonWebTokenClaims(jwt, "name");
+    }
+
+    public boolean getAdmin(String jwt) {
+        return Boolean.parseBoolean(getMapFromIoJsonWebTokenClaims(jwt, "admin"));
+    }
+
+    public Date getIat(String jwt) {
+        return new Date(Long.parseLong(getMapFromIoJsonWebTokenClaims(jwt, "iat"))*1000);
+    }
+
+    public Date getExp(String jwt) {
+        return new Date(Long.parseLong(getMapFromIoJsonWebTokenClaims(jwt, "exp"))*1000);
+    }
+
+    private String getMapFromIoJsonWebTokenClaims(String jwt, String k){
         Claims claims = decodeJWT(jwt);
-        Map<String, Object> expectedMap = new HashMap<>();
         for(Map.Entry<String, Object> entry : claims.entrySet()) {
-            expectedMap.put(entry.getKey(), entry.getValue());
+            if(entry.getKey().equalsIgnoreCase(k)) {
+                return entry.getValue().toString();
+            }
         }
-        return expectedMap;
+        return "";
     }
 }

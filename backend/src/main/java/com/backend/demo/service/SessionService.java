@@ -2,42 +2,33 @@ package com.backend.demo.service;
 
 import com.backend.demo.config.CreateJWT;
 import com.backend.demo.domain.SessionDomain;
-import com.backend.demo.dto.Credential;
-import com.backend.demo.dto.Token;
+import com.backend.demo.dto.Session;
 import com.backend.demo.dto.User;
 import com.backend.demo.exceptions.ResourceNotFoundException;
 import com.backend.demo.exceptions.UnauthorizedException;
-import com.backend.demo.repository.CredentialRepository;
-import com.backend.demo.repository.TokenRepository;
+import com.backend.demo.repository.SessionRepository;
 import com.backend.demo.repository.UserRepository;
 import com.backend.demo.validation.EncryptSecret;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.Calendar;
-import java.util.List;
 import java.util.UUID;
 
 @Service
 public class SessionService {
 
     private final UserRepository userRepository;
-    private final CredentialRepository credentialRepository;
-    private final TokenRepository tokenRepository;
+    private final SessionRepository sessionRepository;
 
-    public SessionService(UserRepository userRepository, CredentialRepository credentialRepository,
-                          TokenRepository tokenRepository) {
+    public SessionService(UserRepository userRepository, SessionRepository sessionRepository) {
         this.userRepository = userRepository;
-        this.credentialRepository = credentialRepository;
-        this.tokenRepository = tokenRepository;
+        this.sessionRepository = sessionRepository;
     }
 
-    public List<User> findCredentialId(SessionDomain sessionDomain) {
+    public Session findCredentialId(SessionDomain sessionDomain) {
         User user = findUser(sessionDomain.getEmail());
-        Credential credential = credentialRepository.findCredentialById(user.getCredentialId()).iterator().next();
-        if (secretReview(credential.getCredential(), sessionDomain.getSecret())) {
-            createSession(user.getId(), user.getFirstName(), user.getEmail());
-            return userRepository.findUserById(user.getId());
+        if (secretReview(user.getCredentials().getCredential(), sessionDomain.getSecret())) {
+            createSession(user.getId(), user.getFirstName() + " " + user.getLastName(), user.getEmail());
+            return sessionRepository.findSessionByUserId(user.getId()).stream().iterator().next();
         }
         throw new ResourceNotFoundException("The data does not found");
     }
@@ -57,29 +48,26 @@ public class SessionService {
     }
 
     private void createSession(int id, String name, String email) {
-        tokenRepository.findTokenByUserId(id).ifPresent(tokenRepository::delete);
-        String tokenId = UUID.randomUUID().toString();
-        Iterable<Token> tokenUUID;
+        sessionRepository.findSessionByUserId(id).ifPresent(sessionRepository::delete);
+        String tokenUuid = UUID.randomUUID().toString();
+        Iterable<Session> tokenUUID;
         while (true) {
-            tokenUUID = tokenRepository.findTokenByTokenId(tokenId);
+            tokenUUID = sessionRepository.findSessionByUuid(tokenUuid);
             if(!tokenUUID.iterator().hasNext()) {
                 break;
             }
-            tokenId = UUID.randomUUID().toString();
+            tokenUuid = UUID.randomUUID().toString();
         }
 
-        Calendar now = Calendar.getInstance();
-        now.add(Calendar.HOUR, 12);
-        Date date = now.getTime();
-
         CreateJWT createJWT = new CreateJWT();
+        String jwtToken = createJWT.createJWT(tokenUuid, false, name, email);
 
-        Token token = new Token();
-
-        token.setDate(date);
-        token.setTokenId(tokenId);
-        token.setUserId(id);
-        token.setToken(createJWT.createJWT(tokenId, false, name, email));
-        tokenRepository.save(token);
+        Session session = new Session();
+        session.setUuid(tokenUuid);
+        session.setEmail(email);
+        session.setUserId(id);
+        session.setToken(jwtToken);
+        session.setDate(createJWT.getExp(jwtToken));
+        sessionRepository.save(session);
     }
 }

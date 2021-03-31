@@ -27,41 +27,22 @@ public class CreateJWTTest {
 
     @Test
     public void createJWT_Test() {
-        String id = UUID.randomUUID().toString();
-        String sub = "quagmire@mail.com";
-        String name = "Quagmire";
-        Date iat = new Date();
-        Date exp = new Date();
+        UUID id = UUID.randomUUID();
+        String sub = "glenn.quagmire@mail.com";
+        String name = "Glenn Quagmire";
 
-        String jwtToken = createJWT.createJWT(id, false, name, sub);
+        String jwtToken = createJWT.createJWT(id.toString(), false, name, sub);
 
-        System.out.println(jwtToken);
-
-        createJWT.getMapFromIoJsonWebTokenClaims(jwtToken).forEach(
-                (key, value) -> {
-                    if (key.equalsIgnoreCase("sub")) {
-                        assertEquals(sub, value);
-                    }
-                    if (key.equalsIgnoreCase("jti")) {
-                        assertEquals(id, value);
-                    }
-                    if (key.equalsIgnoreCase("name")) {
-                        assertEquals(name, value);
-                    }
-                    if (key.equalsIgnoreCase("admin")) {
-                        assertFalse(Boolean.parseBoolean(value.toString()));
-                    }
-                    if(key.equalsIgnoreCase("iat")) {
-                        iat.setTime(Long.parseLong(value.toString())*1000);
-                    }
-                    if (key.equalsIgnoreCase("exp")) {
-                        exp.setTime(Long.parseLong(value.toString())*1000);
-                    }
-                });
+        Date iat = createJWT.getIat(jwtToken);
+        Date exp = createJWT.getExp(jwtToken);
 
         long diffInMillis = Math.abs(exp.getTime() - iat.getTime());
         int diff = (int) TimeUnit.HOURS.convert(diffInMillis, TimeUnit.MILLISECONDS);
 
+        assertEquals(sub, createJWT.getSub(jwtToken));
+        assertEquals(id, createJWT.getJti(jwtToken));
+        assertEquals(name, createJWT.getName(jwtToken));
+        assertFalse(createJWT.getAdmin(jwtToken));
         assertThat(iat.before(exp), is(true));
         assertEquals(12, diff);
     }

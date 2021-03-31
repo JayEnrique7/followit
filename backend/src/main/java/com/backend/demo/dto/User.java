@@ -1,7 +1,12 @@
 package com.backend.demo.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "user")
 public class User {
@@ -16,8 +21,9 @@ public class User {
     private String lastName;
     @Column(unique = true, name = "email")
     private String email;
-    @Column(unique = true, name = "credential_id")
-    private Integer credentialId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "credential_id", referencedColumnName = "id")
+    private Credentials credentials;
 
     public Integer getId() {
         return id;
@@ -51,11 +57,11 @@ public class User {
         this.email = email;
     }
 
-    public Integer getCredentialId() {
-        return credentialId;
+    public Credentials getCredentials() {
+        return credentials;
     }
 
-    public void setCredentialId(Integer credentialId) {
-        this.credentialId = credentialId;
+    public void setCredentials(Credentials credentials) {
+        this.credentials = credentials;
     }
 }
