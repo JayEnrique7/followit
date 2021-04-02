@@ -1,23 +1,23 @@
 package com.backend.demo.controller;
 
+import com.backend.demo.controller.api.BaseControllerApi;
 import com.backend.demo.dto.Messages;
-import com.backend.demo.repository.MessagesRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import com.backend.demo.service.MessagesService;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping(path = "/")
-public class MessagesController {
+import java.util.Optional;
 
-    @Autowired
-    MessagesRepository messagesRepository;
+@RestController
+public class MessagesController extends BaseControllerApi<MessagesService> {
 
-    @GetMapping(path = "messages/all")
-    public @ResponseBody Iterable<Messages> getAllMessages() {
-        return messagesRepository.findAll();
+    public MessagesController(MessagesService service) {
+        super(service);
+    }
+
+    @CrossOrigin
+    @GetMapping(path = "/api/messages/{id}", produces = {"application/json"})
+    public Optional<Messages> message(@PathVariable Integer id) {
+        return getService().messages(id);
     }
 
 }

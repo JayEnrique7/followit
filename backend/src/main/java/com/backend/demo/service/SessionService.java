@@ -1,42 +1,34 @@
 package com.backend.demo.service;
 
-import com.backend.demo.config.CreateJWT;
-import com.backend.demo.domain.SessionDomain;
+import com.backend.demo.config.token.CreateJWT;
+import com.backend.demo.model.SessionRequest;
 import com.backend.demo.dto.Session;
-import com.backend.demo.dto.User;
-import com.backend.demo.exceptions.Unauthorized;
+import com.backend.demo.dto.Users;
+import com.backend.demo.exceptions.UnauthorizedException;
 import com.backend.demo.repository.SessionRepository;
-import com.backend.demo.repository.UserRepository;
-import com.backend.demo.validation.EncryptSecret;
+import com.backend.demo.config.security.EncryptSecret;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class SessionService {
 
-    private final UserRepository userRepository;
     private final SessionRepository sessionRepository;
+    private final UsersService usersService;
 
-    public SessionService(UserRepository userRepository, SessionRepository sessionRepository) {
-        this.userRepository = userRepository;
+    public SessionService(SessionRepository sessionRepository, UsersService usersService) {
         this.sessionRepository = sessionRepository;
+        this.usersService = usersService;
     }
 
-    public Session findCredentialId(SessionDomain sessionDomain) {
-        User user = findUser(sessionDomain.getEmail());
-        if (secretReview(user.getCredentials().getCredential(), sessionDomain.getSecret())) {
-            createSession(user.getId(), user.getFirstName() + " " + user.getLastName(), user.getEmail());
-            return sessionRepository.findSessionByUserId(user.getId()).stream().iterator().next();
+    public String findCredentialId(SessionRequest sessionRequest) {
+        Users users = usersService.findUserByEmail(sessionRequest.getEmail());
+        if (secretReview(users.getCredentials().getCredential(), sessionRequest.getSecret())) {
+            return createSession(users.getId(), users.getFirstName() + " " + users.getLastName(), users.getEmail());
         }
-        throw new Unauthorized("Unauthorized user");
-    }
-
-    private User findUser(String email) {
-        if (userRepository.findUserByEmail(email).iterator().hasNext()) {
-            return userRepository.findUserByEmail(email).iterator().next();
-        }
-        throw new Unauthorized("Unauthorized user");
+        throw new UnauthorizedException("Authentication required");
     }
 
     private boolean secretReview(String credential, String secret) {
@@ -46,7 +38,7 @@ public class SessionService {
         return encryptSecret.verifyUserSecret(secret, secureSecret, salt);
     }
 
-    private void createSession(int id, String name, String email) {
+    private String createSession(int id, String name, String email) {
         sessionRepository.findSessionByUserId(id).ifPresent(sessionRepository::delete);
         String tokenUuid = UUID.randomUUID().toString();
         Iterable<Session> tokenUUID;
@@ -68,5 +60,10 @@ public class SessionService {
         session.setToken(jwtToken);
         session.setDate(createJWT.getExp(jwtToken));
         sessionRepository.save(session);
+        return jwtToken;
+    }
+
+    public Optional<Session> findSessionByToken(String token) {
+        return sessionRepository.findSessionByToken(token);
     }
 }

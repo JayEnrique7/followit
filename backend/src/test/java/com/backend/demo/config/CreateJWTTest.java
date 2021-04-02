@@ -1,24 +1,43 @@
 package com.backend.demo.config;
 
+import com.backend.demo.config.token.CreateJWT;
+import com.backend.demo.dto.Session;
+import com.backend.demo.dto.Users;
+import com.backend.demo.exceptions.UnauthorizedException;
+import com.backend.demo.exceptions.UnexpectedErrorException;
+import com.backend.demo.repository.SessionRepository;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willReturn;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class CreateJWTTest {
    @SpyBean
    CreateJWT createJWT;
+
+   @MockBean
+    SessionRepository sessionRepository;
+
+   @Mock
+   Users users;
+   @Mock
+   Session session;
 
     @Before
     public void setUp() {
@@ -26,24 +45,47 @@ public class CreateJWTTest {
     }
 
     @Test
-    public void createJWT_Test() {
-        UUID id = UUID.randomUUID();
-        String sub = "glenn.quagmire@mail.com";
-        String name = "Glenn Quagmire";
+    public void validateToken_test_valid() {
+        String token = createJWT.createJWT(UUID.randomUUID().toString(), false, "Glenn Quagmire", "glenn.quagmire@mail.com");
+        given(users.getId()).willReturn(1);
+        given(users.getFirstName()).willReturn("Glenn");
+        given(users.getLastName()).willReturn("Quagmire");
+        given(users.getEmail()).willReturn("glenn.quagmire@mail.com");
+        given(session.getUserId()).willReturn(1);
 
-        String jwtToken = createJWT.createJWT(id.toString(), false, name, sub);
+        assertTrue(createJWT.validateToken(token, users, session));
+    }
 
-        Date iat = createJWT.getIat(jwtToken);
-        Date exp = createJWT.getExp(jwtToken);
+    @Test
+    public void validateToken_test_invalid_token_fail() {
+        assertThatThrownBy(() -> createJWT.validateToken("token", users, session)).isInstanceOf(UnauthorizedException.class).hasMessage("Invalid token");
+    }
 
-        long diffInMillis = Math.abs(exp.getTime() - iat.getTime());
-        int diff = (int) TimeUnit.HOURS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+    @Test
+    public void validateToken_test_expired_token_fail() {
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJnbGVubi5xdWFnbWlyZUBtYWlsLmNvbSIsImp0aSI6IjBlZTkzYWIyLTBlNDAtNDA5Yy1hNTgzLWY0NWU0YmZkMjE5OSIsImlhdCI6MTYxNzMzMzQxNSwiZXhwIjoxNjE3Mzc2NjE1LCJuYW1lIjoiR2xlbm4gUXVhZ21pcmUiLCJhZG1pbiI6ZmFsc2V9.uCImV06Sk9a6K5JNUvcIMKoBKjA-YkwuiTnggoges-Q";
+        willReturn(Optional.of(session)).given(sessionRepository).findSessionByToken(anyString());
 
-        assertEquals(sub, createJWT.getSub(jwtToken));
-        assertEquals(id, createJWT.getJti(jwtToken));
-        assertEquals(name, createJWT.getName(jwtToken));
-        assertFalse(createJWT.getAdmin(jwtToken));
-        assertThat(iat.before(exp), is(true));
-        assertEquals(12, diff);
+        assertThatThrownBy(() -> createJWT.validateToken(token, users, session)).isInstanceOf(ExpiredJwtException.class);
+    }
+
+    @Test
+    public void getMapFromIoJsonWebTokenClaims_test_fail() {
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJnbGVubi5xdWFnbWlyZUBtYWlsLmNvbSIsImp0aSI6IjBhNzkwNzQ5LThmOTctNGVhOC04MjgwLTY3ZjBjY2Y0ZmIwZiIsImlhdCI6MTYxNzM4MTQzOSwiZXhwIjoxNjE3NDI0NjM5LCJ0ZXN0IjpmYWxzZX0.PYr2ZWwryvHesnD1er4J0Vi2eBOJXt50Y0BOkfBs63c";
+        willReturn(Optional.of(session)).given(sessionRepository).findSessionByToken(anyString());
+        given(users.getId()).willReturn(1);
+        given(users.getFirstName()).willReturn("Glenn");
+        given(users.getLastName()).willReturn("Quagmire");
+        given(users.getEmail()).willReturn("glenn.quagmire@mail.com");
+        given(session.getUserId()).willReturn(1);
+
+        assertThatThrownBy(() -> createJWT.validateToken(token, users, session)).isInstanceOf(UnexpectedErrorException.class).hasMessage("Unexpected error");
+    }
+
+    @Test
+    public void getExp_test() {
+        Date dateNow = Calendar.getInstance().getTime();
+        Date dateToken = createJWT.getExp(createJWT.createJWT(UUID.randomUUID().toString(), false, "Glenn Quagmire", "glenn.quagmire@mail.com"));
+        assertThat(dateNow.before(dateToken), is(true));
     }
 }

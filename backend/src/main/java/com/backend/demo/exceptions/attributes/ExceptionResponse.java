@@ -2,8 +2,12 @@ package com.backend.demo.exceptions.attributes;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class ExceptionResponse {
-    private String errorCode;
-    private String errorMessage;
+    private Date timestamp;
+    private Integer status;
+    private String error;
+    private String message;
 }

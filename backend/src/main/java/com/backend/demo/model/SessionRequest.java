@@ -1,11 +1,11 @@
-package com.backend.demo.domain;
+package com.backend.demo.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
 @AllArgsConstructor
-public class SessionDomain {
+public class SessionRequest {
     @NonNull
     @Getter
     private String email;

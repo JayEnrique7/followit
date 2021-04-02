@@ -1,19 +1,22 @@
-package com.backend.demo.config;
+package com.backend.demo.config.token;
 
 import java.nio.charset.StandardCharsets;
 
-import com.backend.demo.exceptions.UnexpectedError;
+import com.backend.demo.dto.Session;
+import com.backend.demo.dto.Users;
+import com.backend.demo.exceptions.UnauthorizedException;
+import com.backend.demo.exceptions.UnexpectedErrorException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.UUID;
-import java.util.Map;
+import java.util.*;
 
 import io.jsonwebtoken.Jwts;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CreateJWT {
+
     private static final String SECRET_KEY = "oeRaYY7Wo24sDqKSX3IM9ASGmdGPmkTd9jo1QTy4b7P9Ze5_9hKolVX8xNrQDcNRfVEdTZNOuOyqEGhXEbdJI-ZQ19k_o9MI0y3eZN2lp9jow55FfXMiINEdt1XR85VipRLSOkT6kSpzs2x-jbLDiz9iFVzkd81YKxMgPA7VfZeQUm4n-mOmnWMaVX30zGFU4L3oPBctYKkl4dYfqYWqRNfrgPJVi5DGFjywgxx0ASEiJHtV72paI3fDR2XwlSkyhhmY-ICjCRmsJN4fX1pdoL8a18-aQrvyu4j0Os6dVPYIoPvvY0SAZtWYKHfM15g7A3HD4cVREf9cUsprCRK93w";
 
     public String createJWT(String id, boolean admin, String name, String subject) {
@@ -37,15 +40,25 @@ public class CreateJWT {
 
     private Claims decodeJWT(String jwt) {
         return Jwts.parser()
-                .setSigningKey(SECRET_KEY.getBytes(StandardCharsets.UTF_8))
-                .parseClaimsJws(jwt).getBody();
+                    .setSigningKey(SECRET_KEY.getBytes(StandardCharsets.UTF_8))
+                    .parseClaimsJws(jwt).getBody();
+    }
+
+    public boolean validateToken(String token, Users users, Session session) {
+            boolean id = users.getId().equals(session.getUserId());
+            boolean email = users.getEmail().equalsIgnoreCase(getSub(token));
+            boolean userName = (users.getFirstName() + " " + users.getLastName()).equalsIgnoreCase(getName(token));
+            if (id && email && userName) {
+                    return true;
+            }
+        throw new UnauthorizedException("Invalid token");
     }
 
     public String getSub(String jwt) {
         return getMapFromIoJsonWebTokenClaims(jwt, "sub");
     }
 
-    public UUID getJti(String jwt) {
+    private UUID getJti(String jwt) {
         return UUID.fromString(getMapFromIoJsonWebTokenClaims(jwt, "jti"));
     }
 
@@ -53,11 +66,11 @@ public class CreateJWT {
         return getMapFromIoJsonWebTokenClaims(jwt, "name");
     }
 
-    public boolean getAdmin(String jwt) {
+    private boolean getAdmin(String jwt) {
         return Boolean.parseBoolean(getMapFromIoJsonWebTokenClaims(jwt, "admin"));
     }
 
-    public Date getIat(String jwt) {
+    private Date getIat(String jwt) {
         return new Date(Long.parseLong(getMapFromIoJsonWebTokenClaims(jwt, "iat"))*1000);
     }
 
@@ -72,6 +85,6 @@ public class CreateJWT {
                 return entry.getValue().toString();
             }
         }
-        throw new UnexpectedError("Unexpected error");
+        throw new UnexpectedErrorException("Unexpected error");
     }
 }

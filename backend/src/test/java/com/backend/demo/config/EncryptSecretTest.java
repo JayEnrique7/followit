@@ -1,7 +1,8 @@
-package com.backend.demo.validation;
+package com.backend.demo.config;
 
 import static org.junit.Assert.assertTrue;
 
+import com.backend.demo.config.security.EncryptSecret;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

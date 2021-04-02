@@ -1,6 +1,6 @@
-package com.backend.demo.validation;
+package com.backend.demo.config.security;
 
-import com.backend.demo.exceptions.UnexpectedError;
+import com.backend.demo.exceptions.UnexpectedErrorException;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -34,7 +34,7 @@ public class EncryptSecret {
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             return skf.generateSecret(spec).getEncoded();
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new UnexpectedError("Unexpected error");
+            throw new UnexpectedErrorException("Unexpected error");
         } finally {
             spec.clearPassword();
         }
