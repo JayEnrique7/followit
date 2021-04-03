@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+import static com.backend.demo.constant.PathConstant.URL_GET_ALL_MESSAGES;
+
 @RestController
 public class MessagesController extends BaseControllerApi<MessagesService> {
 
@@ -15,7 +17,7 @@ public class MessagesController extends BaseControllerApi<MessagesService> {
     }
 
     @CrossOrigin
-    @GetMapping(path = "/api/messages/{id}", produces = {"application/json"})
+    @GetMapping(path = URL_GET_ALL_MESSAGES, produces = {"application/json"})
     public Optional<Messages> message(@PathVariable Integer id) {
         return getService().messages(id);
     }

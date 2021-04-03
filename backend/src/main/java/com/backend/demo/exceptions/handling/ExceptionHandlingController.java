@@ -49,7 +49,7 @@ public class ExceptionHandlingController extends ResponseStatusExceptionHandler 
         );
     }
 
-    private ExceptionResponse exceptionResponse(Integer status, String error, String message) {
+    public ExceptionResponse exceptionResponse(Integer status, String error, String message) {
         ExceptionResponse response = new ExceptionResponse();
         response.setTimestamp(Calendar.getInstance().getTime());
         response.setStatus(status);

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotNull;
 
+import static com.backend.demo.constant.PathConstant.URL_LOGIN;
+
 @RestController
 public class SessionController extends BaseControllerApi<SessionService> {
 
@@ -21,7 +23,7 @@ public class SessionController extends BaseControllerApi<SessionService> {
     }
 
     @CrossOrigin
-    @PostMapping(value = "/login", produces = {"application/json"})
+    @PostMapping(value = URL_LOGIN, produces = {"application/json"})
     public ResponseEntity<String> login(@RequestBody @NotNull SessionRequest sessionRequest) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Authorization", getService().findCredentialId(sessionRequest));

@@ -9,7 +9,6 @@ import com.backend.demo.repository.SessionRepository;
 import com.backend.demo.config.security.EncryptSecret;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -17,10 +16,12 @@ public class SessionService {
 
     private final SessionRepository sessionRepository;
     private final UsersService usersService;
+    private final VerifyJWTService verifyJWTService;
 
-    public SessionService(SessionRepository sessionRepository, UsersService usersService) {
+    public SessionService(SessionRepository sessionRepository, UsersService usersService, VerifyJWTService verifyJWTService) {
         this.sessionRepository = sessionRepository;
         this.usersService = usersService;
+        this.verifyJWTService = verifyJWTService;
     }
 
     public String findCredentialId(SessionRequest sessionRequest) {
@@ -58,12 +59,8 @@ public class SessionService {
         session.setEmail(email);
         session.setUserId(id);
         session.setToken(jwtToken);
-        session.setDate(createJWT.getExp(jwtToken));
+        session.setDate(verifyJWTService.getExp(jwtToken));
         sessionRepository.save(session);
         return jwtToken;
-    }
-
-    public Optional<Session> findSessionByToken(String token) {
-        return sessionRepository.findSessionByToken(token);
     }
 }
