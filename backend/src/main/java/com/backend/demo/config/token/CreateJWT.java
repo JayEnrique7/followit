@@ -7,11 +7,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.*;
 
 import io.jsonwebtoken.Jwts;
-import org.springframework.stereotype.Service;
 
 import static com.backend.demo.constant.PathConstant.SECRET_KEY;
 
-@Service
 public class CreateJWT {
 
     public String createJWT(String id, boolean admin, String name, String subject) {

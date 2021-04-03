@@ -28,6 +28,7 @@ public class SessionController extends BaseControllerApi<SessionService> {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Authorization", getService().findCredentialId(sessionRequest));
         return ResponseEntity.ok()
-        .headers(responseHeaders).body("hej");//.createAuthenticationToken(sessionRequest);
+                .headers(responseHeaders)
+                .body("");
     }
 }

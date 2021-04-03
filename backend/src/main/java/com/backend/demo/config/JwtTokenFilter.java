@@ -1,10 +1,8 @@
 package com.backend.demo.config;
 
 import com.backend.demo.dto.Session;
-import com.backend.demo.dto.Users;
 import com.backend.demo.model.JsonBody;
 import com.backend.demo.repository.SessionRepository;
-import com.backend.demo.repository.UsersRepository;
 import com.backend.demo.service.VerifyJWTService;
 import com.google.gson.Gson;
 import io.jsonwebtoken.JwtException;
@@ -27,13 +25,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Optional;
 
+import static com.backend.demo.constant.PathConstant.URL_LOGIN;
+
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Autowired
     UserDetailsService userDetailsService;
-    @Autowired
-    UsersRepository usersRepository;
     @Autowired
     SessionRepository sessionRepository;
     @Autowired
@@ -43,33 +41,47 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest, @NotNull HttpServletResponse httpServletResponse, @NotNull FilterChain filterChain) throws ServletException, IOException {
         try {
             final String authorizationHeader = httpServletRequest.getHeader("Authorization");
-
-            String username = null;
-            String jwt = null;
+            final String uri = httpServletRequest.getRequestURI();
+            final String restMethod = httpServletRequest.getMethod();
 
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-                jwt = authorizationHeader.substring(7);
-                username = verifyJWTService.getSub(jwt);
-            }
 
+                String jwt = authorizationHeader.substring(7);
+                Optional<Session> findToken = sessionRepository.findSessionByToken(jwt);
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                if (findToken.isPresent()) {
+                    String username = verifyJWTService.getSub(jwt);
 
-                Users users = usersRepository.findUserByEmail(verifyJWTService.getSub(jwt)).iterator().next();
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                    if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                        UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
 
-                Optional<Session> session = sessionRepository.findSessionByToken(jwt);
-
-                if (session.isPresent() && verifyJWTService.validateToken(jwt, users, session.stream().iterator().next())) {
-
-                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-                    usernamePasswordAuthenticationToken
-                            .setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    }
                 }
             }
+
+            if (SecurityContextHolder.getContext().getAuthentication() == null &&
+                    !uri.equalsIgnoreCase(URL_LOGIN) &&
+                    !restMethod.equalsIgnoreCase("POST")) {
+
+                ((HttpServletResponse) httpServletResponse).setStatus(HttpStatus.UNAUTHORIZED.value());
+                ((HttpServletResponse) httpServletResponse).setContentType("application/json");
+                ((HttpServletResponse) httpServletResponse).setCharacterEncoding("UTF-8");
+
+                PrintWriter out = ((HttpServletResponse) httpServletResponse).getWriter();
+                out.print(createJsonBody());
+                out.flush();
+                return;
+            }
+
             filterChain.doFilter(httpServletRequest, httpServletResponse);
+
         } catch (JwtException e) {
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             httpServletResponse.setContentType("application/json");
@@ -80,10 +92,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             out.flush();
         }
     }
+
     private String createJsonBody() {
         JsonBody jsonBody = new JsonBody(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.name(), "Invalid token");
         return new Gson().toJson(jsonBody);
     }
-
 }
 
