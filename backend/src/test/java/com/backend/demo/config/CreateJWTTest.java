@@ -47,19 +47,6 @@ public class CreateJWTTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test
-    public void validateToken_test_valid() {
-        String token = createJWT.createJWT(UUID.randomUUID().toString(), false, "Glenn Quagmire", "glenn.quagmire@mail.com");
-        given(users.getId()).willReturn(1);
-        given(users.getFirstName()).willReturn("Glenn");
-        given(users.getLastName()).willReturn("Quagmire");
-        given(users.getEmail()).willReturn("glenn.quagmire@mail.com");
-        given(session.getUserId()).willReturn(1);
-        System.out.println(token);
-
-        assertTrue(verifyJWTService.validateToken(token, users, session));
-    }
-
     /*@Test
     public void validateToken_test_invalid_token_fail() {
         assertThatThrownBy(() -> verifyJWTService.validateToken("token", users, session)).isInstanceOf(UnauthorizedException.class).hasMessage("Invalid token");

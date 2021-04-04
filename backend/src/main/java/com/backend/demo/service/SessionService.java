@@ -1,6 +1,7 @@
 package com.backend.demo.service;
 
 import com.backend.demo.config.token.CreateJWT;
+import com.backend.demo.exceptions.NotFoundException;
 import com.backend.demo.model.SessionRequest;
 import com.backend.demo.dto.Session;
 import com.backend.demo.dto.Users;
@@ -62,5 +63,15 @@ public class SessionService {
         session.setDate(verifyJWTService.getExp(jwtToken));
         sessionRepository.save(session);
         return jwtToken;
+    }
+
+    public Session findSessionByToken(String jwt) {
+        return sessionRepository.findSessionByToken(jwt).orElseThrow(
+                () -> new NotFoundException("Session not exist!")
+        );
+    }
+
+    public void sessionDelete(Session session) {
+        sessionRepository.delete(session);
     }
 }

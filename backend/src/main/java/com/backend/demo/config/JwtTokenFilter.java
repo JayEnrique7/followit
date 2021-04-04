@@ -2,10 +2,9 @@ package com.backend.demo.config;
 
 import com.backend.demo.dto.Session;
 import com.backend.demo.model.JsonBody;
-import com.backend.demo.repository.SessionRepository;
+import com.backend.demo.service.SessionService;
 import com.backend.demo.service.VerifyJWTService;
 import com.google.gson.Gson;
-import io.jsonwebtoken.JwtException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,9 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Optional;
-
-import static com.backend.demo.constant.PathConstant.URL_LOGIN;
 
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
@@ -33,56 +29,41 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Autowired
     UserDetailsService userDetailsService;
     @Autowired
-    SessionRepository sessionRepository;
+    SessionService sessionService;
     @Autowired
     VerifyJWTService verifyJWTService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest httpServletRequest, @NotNull HttpServletResponse httpServletResponse, @NotNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NotNull HttpServletRequest httpServletRequest, @NotNull HttpServletResponse httpServletResponse, @NotNull FilterChain filterChain) throws ServletException, IOException {
+        Session session = null;
         try {
             final String authorizationHeader = httpServletRequest.getHeader("Authorization");
-            final String uri = httpServletRequest.getRequestURI();
-            final String restMethod = httpServletRequest.getMethod();
 
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-
+            if (authorizationHeader != null) {
                 String jwt = authorizationHeader.substring(7);
-                Optional<Session> findToken = sessionRepository.findSessionByToken(jwt);
+                session = sessionService.findSessionByToken(jwt);
+                String username = verifyJWTService.getSub(jwt);
 
-                if (findToken.isPresent()) {
-                    String username = verifyJWTService.getSub(jwt);
+                if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
 
-                    if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                        UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-                        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
-
-                        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-                        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    }
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
-            }
-
-            if (SecurityContextHolder.getContext().getAuthentication() == null &&
-                    !uri.equalsIgnoreCase(URL_LOGIN) &&
-                    !restMethod.equalsIgnoreCase("POST")) {
-
-                ((HttpServletResponse) httpServletResponse).setStatus(HttpStatus.UNAUTHORIZED.value());
-                ((HttpServletResponse) httpServletResponse).setContentType("application/json");
-                ((HttpServletResponse) httpServletResponse).setCharacterEncoding("UTF-8");
-
-                PrintWriter out = ((HttpServletResponse) httpServletResponse).getWriter();
-                out.print(createJsonBody());
-                out.flush();
-                return;
             }
 
             filterChain.doFilter(httpServletRequest, httpServletResponse);
 
-        } catch (JwtException e) {
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+            if (e.getMessage().startsWith("JWT expired")) {
+                sessionService.sessionDelete(session);
+            }
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             httpServletResponse.setContentType("application/json");
             httpServletResponse.setCharacterEncoding("UTF-8");

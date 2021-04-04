@@ -1,8 +1,5 @@
 package com.backend.demo.service;
 
-import com.backend.demo.dto.Session;
-import com.backend.demo.dto.Users;
-import com.backend.demo.exceptions.UnauthorizedException;
 import com.backend.demo.exceptions.UnexpectedErrorException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -11,7 +8,6 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 
 import static com.backend.demo.constant.PathConstant.SECRET_KEY;
 
@@ -24,34 +20,12 @@ public class VerifyJWTService {
                 .parseClaimsJws(jwt).getBody();
     }
 
-    public boolean validateToken(String token, Users users, Session session) {
-        boolean id = users.getId().equals(session.getUserId());
-        boolean email = users.getEmail().equalsIgnoreCase(getSub(token));
-        boolean userName = (users.getFirstName() + " " + users.getLastName()).equalsIgnoreCase(getName(token));
-        if (id && email && userName) {
-            return true;
-        }
-        throw new UnauthorizedException("Invalid token");
-    }
-
     public String getSub(String jwt) {
         return getMapFromIoJsonWebTokenClaims(jwt, "sub");
     }
 
-    private UUID getJti(String jwt) {
-        return UUID.fromString(getMapFromIoJsonWebTokenClaims(jwt, "jti"));
-    }
-
-    public String getName(String jwt) {
-        return getMapFromIoJsonWebTokenClaims(jwt, "name");
-    }
-
     private boolean getAdmin(String jwt) {
         return Boolean.parseBoolean(getMapFromIoJsonWebTokenClaims(jwt, "admin"));
-    }
-
-    private Date getIat(String jwt) {
-        return new Date(Long.parseLong(getMapFromIoJsonWebTokenClaims(jwt, "iat"))*1000);
     }
 
     public Date getExp(String jwt) {
