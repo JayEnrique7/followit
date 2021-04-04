@@ -65,9 +65,14 @@ public class SessionService {
         return jwtToken;
     }
 
+    public void logout(String jwt) {
+        Session session = findSessionByToken(jwt.substring(7));
+        sessionDelete(session);
+    }
+
     public Session findSessionByToken(String jwt) {
         return sessionRepository.findSessionByToken(jwt).orElseThrow(
-                () -> new NotFoundException("Session not exist!")
+                () -> new NotFoundException("the session not exist!")
         );
     }
 
