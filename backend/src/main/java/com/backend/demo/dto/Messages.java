@@ -1,9 +1,6 @@
 package com.backend.demo.dto;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Messages {
@@ -11,20 +8,25 @@ public class Messages {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    private Integer userId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "users_id", referencedColumnName = "id")
+    private Users usersId;
+    @Column(name = "message")
     private String message;
-    private Integer userMessageId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_message_id", referencedColumnName = "id")
+    private Users userMessageId;
 
     public Integer getId() {
         return id;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public Users getUsersId() {
+        return usersId;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUsersId(Users usersId) {
+        this.usersId = usersId;
     }
 
     public String getMessage() {
@@ -35,11 +37,11 @@ public class Messages {
         this.message = message;
     }
 
-    public Integer getUserMessageId() {
+    public Users getUserMessageId() {
         return userMessageId;
     }
 
-    public void setUserMessageId(Integer userMessageId) {
+    public void setUserMessageId(Users userMessageId) {
         this.userMessageId = userMessageId;
     }
 }

@@ -1,19 +1,18 @@
 package com.backend.demo.config;
 
+import com.backend.demo.config.userDetailsDto.UserDetail;
 import com.backend.demo.dto.Session;
+import com.backend.demo.dto.Users;
 import com.backend.demo.model.JsonBody;
 import com.backend.demo.service.SessionService;
 import com.backend.demo.service.VerifyJWTService;
 import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -23,15 +22,17 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@Component
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    @Autowired
-    UserDetailsService userDetailsService;
-    @Autowired
-    SessionService sessionService;
-    @Autowired
-    VerifyJWTService verifyJWTService;
+    private final SessionService sessionService;
+    private final VerifyJWTService verifyJWTService;
+    private final UserDetail userDetail;
+
+    public JwtTokenFilter(SessionService sessionService, UserDetail userDetail, VerifyJWTService verifyJWTService) {
+        this.sessionService = sessionService;
+        this.userDetail = userDetail;
+        this.verifyJWTService = verifyJWTService;
+    }
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest httpServletRequest, @NotNull HttpServletResponse httpServletResponse, @NotNull FilterChain filterChain) throws ServletException, IOException {
@@ -45,7 +46,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 String username = verifyJWTService.getSub(jwt);
 
                 if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                    UserDetails userDetails = this.userDetail.loadUserByUsername(session.getUuid());
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
@@ -60,7 +61,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
 
         } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
             if (e.getMessage().startsWith("JWT expired")) {
                 sessionService.sessionDelete(session);
             }

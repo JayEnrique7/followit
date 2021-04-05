@@ -1,36 +1,38 @@
 package com.backend.demo.dto;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "follower")
 public class Follower {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    private Integer userId;
-    private Integer userFollowingId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_following_id", referencedColumnName = "id")
+    private Users usersFollowing;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_follower_id", referencedColumnName = "id")
+    private Users userFollower;
 
     public Integer getId() {
         return id;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public Users getUsersFollowing() {
+        return usersFollowing;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUsersFollowing(Users usersFollowing) {
+        this.usersFollowing = usersFollowing;
     }
 
-    public Integer getUserFollowingId() {
-        return userFollowingId;
+    public Users getUserFollower() {
+        return userFollower;
     }
 
-    public void setUserFollowingId(Integer userFollowingId) {
-        this.userFollowingId = userFollowingId;
+    public void setUserFollower(Users userFollower) {
+        this.userFollower = userFollower;
     }
 }

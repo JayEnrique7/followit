@@ -1,22 +1,20 @@
 package com.backend.demo.controller;
 
+import com.backend.demo.controller.api.BaseControllerApi;
 import com.backend.demo.dto.Follower;
-import com.backend.demo.repository.FollowerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import com.backend.demo.service.FollowerService;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/")
-public class FollowerController {
+@RestController
+public class FollowerController extends BaseControllerApi<FollowerService> {
 
-    @Autowired
-    private FollowerRepository followerRepository;
+    public FollowerController(FollowerService service) {
+        super(service);
+    }
 
-    @GetMapping(path = "followers/all")
+    @CrossOrigin
+    @PostMapping(value = "/api/messages", produces = {"application/json"})
     public @ResponseBody Iterable<Follower> getAllFollower() {
-        return followerRepository.findAll();
+        return null;
     }
 }

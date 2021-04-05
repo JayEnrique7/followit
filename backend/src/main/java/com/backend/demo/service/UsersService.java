@@ -1,11 +1,10 @@
 package com.backend.demo.service;
 
 import com.backend.demo.dto.Users;
+import com.backend.demo.exceptions.NotFoundException;
 import com.backend.demo.exceptions.UnauthorizedException;
 import com.backend.demo.repository.UsersRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class UsersService {
@@ -17,14 +16,16 @@ public class UsersService {
     }
 
     public Users findUserByEmail(String email) {
-        if (usersRepository.findUserByEmail(email).iterator().hasNext()) {
-            return usersRepository.findUserByEmail(email).iterator().next();
+        if (usersRepository.findUsersByEmail(email).iterator().hasNext()) {
+            return usersRepository.findUsersByEmail(email).iterator().next();
         }
         throw new UnauthorizedException("Authentication required");
     }
 
-    public Optional<Users> findUserById(Long id) {
-        return usersRepository.findById(id);
+    public Users findUserById(Integer id) {
+        return usersRepository.findUsersById(id).orElseThrow(
+                () -> new NotFoundException("the session not exist!")
+        );
     }
 
 }

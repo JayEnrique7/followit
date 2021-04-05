@@ -1,10 +1,13 @@
 package com.backend.demo.controller;
 
 import com.backend.demo.controller.api.BaseControllerApi;
+import com.backend.demo.dto.Users;
 import com.backend.demo.model.SessionRequest;
 import com.backend.demo.service.SessionService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +22,10 @@ public class SessionController extends BaseControllerApi<SessionService> {
 
     public SessionController(SessionService service) {
         super(service);
+    }
+
+    public Users users(@AuthenticationPrincipal Users users) {
+        return users;
     }
 
     @CrossOrigin

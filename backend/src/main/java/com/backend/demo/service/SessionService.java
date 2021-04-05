@@ -8,6 +8,8 @@ import com.backend.demo.dto.Users;
 import com.backend.demo.exceptions.UnauthorizedException;
 import com.backend.demo.repository.SessionRepository;
 import com.backend.demo.config.security.EncryptSecret;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -15,6 +17,8 @@ import java.util.UUID;
 @Service
 public class SessionService {
 
+    @Autowired
+    UserDetailsService userDetailsService;
     private final SessionRepository sessionRepository;
     private final UsersService usersService;
     private final VerifyJWTService verifyJWTService;
@@ -28,20 +32,20 @@ public class SessionService {
     public String findCredentialId(SessionRequest sessionRequest) {
         Users users = usersService.findUserByEmail(sessionRequest.getEmail());
         if (secretReview(users.getCredentials().getCredential(), sessionRequest.getSecret())) {
-            return createSession(users.getId(), users.getFirstName() + " " + users.getLastName(), users.getEmail());
+            return createSession(users);
         }
         throw new UnauthorizedException("Authentication required");
     }
 
-    private boolean secretReview(String credential, String secret) {
+    public boolean secretReview(String credential, String secret) {
         String secureSecret = credential.split("(?<==)")[0];
         String salt = credential.split("(?<==)")[1];
         EncryptSecret encryptSecret = new EncryptSecret();
         return encryptSecret.verifyUserSecret(secret, secureSecret, salt);
     }
 
-    private String createSession(int id, String name, String email) {
-        sessionRepository.findSessionByUserId(id).ifPresent(sessionRepository::delete);
+    private String createSession(Users users) {
+        sessionRepository.findSessionByUsersId(users.getId()).ifPresent(sessionRepository::delete);
         String tokenUuid = UUID.randomUUID().toString();
         Iterable<Session> tokenUUID;
         while (true) {
@@ -53,12 +57,12 @@ public class SessionService {
         }
 
         CreateJWT createJWT = new CreateJWT();
-        String jwtToken = createJWT.createJWT(tokenUuid, false, name, email);
+        String jwtToken = createJWT.createJWT(tokenUuid, false, users.getFirstName() + " " + users.getLastName(), users.getEmail());
 
         Session session = new Session();
         session.setUuid(tokenUuid);
-        session.setEmail(email);
-        session.setUserId(id);
+        session.setEmail(users.getEmail());
+        session.setUsers(users);
         session.setToken(jwtToken);
         session.setDate(verifyJWTService.getExp(jwtToken));
         sessionRepository.save(session);
@@ -66,6 +70,7 @@ public class SessionService {
     }
 
     public void logout(String jwt) {
+        System.out.println(userDetailsService);
         Session session = findSessionByToken(jwt.substring(7));
         sessionDelete(session);
     }
@@ -78,5 +83,19 @@ public class SessionService {
 
     public void sessionDelete(Session session) {
         sessionRepository.delete(session);
+    }
+
+    public Session findUuid(String uuid) {
+        Session session = sessionRepository.findSessionByUuid(uuid).iterator().next();
+        if (session != null) {
+            return session;
+        }
+        throw new UnauthorizedException("Authentication required");
+    }
+
+    public Session findSessionByUser(Integer userId) {
+        return sessionRepository.findSessionByUsersId(userId).orElseThrow(
+                () -> new NotFoundException("the session not exist!")
+        );
     }
 }

@@ -2,30 +2,26 @@ package com.backend.demo.dto;
 
 import com.backend.demo.controller.views.SessionView;
 import com.fasterxml.jackson.annotation.JsonView;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "session")
 public class Session {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(unique = true, name = "id")
     private Integer id;
     @JsonView(SessionView.Token.class)
-    @Column(unique = true, name = "token")
+    @Column(name = "token")
     private String token;
     @Column(name = "date")
     private Date date;
-    @Column(unique = true, name = "user_id")
-    private Integer userId;
-    @Column(unique = true, name = "uuid")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "users_id", referencedColumnName = "id")
+    private Users users;
+    @Column(name = "uuid")
     private String uuid;
     @JsonView(SessionView.Token.class)
     @Column(name = "email")
@@ -51,12 +47,12 @@ public class Session {
         this.date = date;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public Users getUsers() {
+        return users;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUsers(Users users) {
+        this.users= users;
     }
 
     public String getUuid() {
