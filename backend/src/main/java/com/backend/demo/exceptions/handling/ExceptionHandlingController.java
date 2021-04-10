@@ -1,6 +1,7 @@
 package com.backend.demo.exceptions.handling;
 
 import com.backend.demo.exceptions.NotFoundException;
+import com.backend.demo.exceptions.UnacceptableException;
 import com.backend.demo.exceptions.UnauthorizedException;
 import com.backend.demo.exceptions.UnexpectedErrorException;
 import com.backend.demo.exceptions.attributes.ExceptionResponse;
@@ -23,7 +24,7 @@ public class ExceptionHandlingController extends ResponseStatusExceptionHandler 
                         HttpStatus.NOT_FOUND.value(),
                         HttpStatus.NOT_FOUND.name(),
                         ex.getMessage()),
-                        HttpStatus.NOT_FOUND
+                HttpStatus.NOT_FOUND
         );
     }
 
@@ -34,7 +35,7 @@ public class ExceptionHandlingController extends ResponseStatusExceptionHandler 
                         HttpStatus.UNAUTHORIZED.value(),
                         HttpStatus.UNAUTHORIZED.name(),
                         ex.getMessage()),
-                        HttpStatus.UNAUTHORIZED
+                HttpStatus.UNAUTHORIZED
         );
     }
 
@@ -45,7 +46,18 @@ public class ExceptionHandlingController extends ResponseStatusExceptionHandler 
                         HttpStatus.INTERNAL_SERVER_ERROR.value(),
                         HttpStatus.INTERNAL_SERVER_ERROR.name(),
                         ex.getMessage()),
-                        HttpStatus.INTERNAL_SERVER_ERROR
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    }
+
+    @ExceptionHandler(UnacceptableException.class)
+    public ResponseEntity<ExceptionResponse> hej(UnacceptableException ex) {
+        return new ResponseEntity<>(
+                exceptionResponse(
+                        HttpStatus.NOT_ACCEPTABLE.value(),
+                        HttpStatus.NOT_ACCEPTABLE.name(),
+                        ex.getMessage()),
+                HttpStatus.NOT_ACCEPTABLE
         );
     }
 

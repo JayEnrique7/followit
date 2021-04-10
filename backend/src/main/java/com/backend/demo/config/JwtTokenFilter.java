@@ -2,8 +2,7 @@ package com.backend.demo.config;
 
 import com.backend.demo.config.userDetailsDto.UserDetail;
 import com.backend.demo.dto.Session;
-import com.backend.demo.dto.Users;
-import com.backend.demo.model.JsonBody;
+import com.backend.demo.constant.JsonBody;
 import com.backend.demo.service.SessionService;
 import com.backend.demo.service.VerifyJWTService;
 import com.google.gson.Gson;

@@ -19,6 +19,9 @@ public class Users {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "credential_id", referencedColumnName = "id")
     private Credentials credentials;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "info_id", referencedColumnName = "id")
+    private Info info;
 
     public Integer getId() {
         return id;
@@ -58,5 +61,13 @@ public class Users {
 
     public void setCredentials(Credentials credentials) {
         this.credentials = credentials;
+    }
+
+    public Info getInfo() {
+        return info;
+    }
+
+    public void setInfo(Info info) {
+        this.info = info;
     }
 }

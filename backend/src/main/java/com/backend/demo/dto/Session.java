@@ -18,9 +18,8 @@ public class Session {
     private String token;
     @Column(name = "date")
     private Date date;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "users_id", referencedColumnName = "id")
-    private Users users;
+    @Column(name = "users_id")
+    private Integer usersId;
     @Column(name = "uuid")
     private String uuid;
     @JsonView(SessionView.Token.class)
@@ -47,12 +46,12 @@ public class Session {
         this.date = date;
     }
 
-    public Users getUsers() {
-        return users;
+    public Integer getUsersId() {
+        return usersId;
     }
 
-    public void setUsers(Users users) {
-        this.users= users;
+    public void setUsersId(Integer users_id) {
+        this.usersId = users_id;
     }
 
     public String getUuid() {

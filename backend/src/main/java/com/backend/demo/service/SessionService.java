@@ -62,7 +62,7 @@ public class SessionService {
         Session session = new Session();
         session.setUuid(tokenUuid);
         session.setEmail(users.getEmail());
-        session.setUsers(users);
+        session.setUsersId(users.getId());
         session.setToken(jwtToken);
         session.setDate(verifyJWTService.getExp(jwtToken));
         sessionRepository.save(session);

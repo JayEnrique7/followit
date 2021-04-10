@@ -1,31 +1,36 @@
 package com.backend.demo.dto;
 
+import com.backend.demo.controller.views.MessageView;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import javax.persistence.*;
 
 @Entity
+@Table(name = "messages")
 public class Messages {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "users_id", referencedColumnName = "id")
-    private Users usersId;
+    @JsonView(MessageView.Message.class)
+    @Column(name = "users_id")
+    private Integer usersId;
+    @JsonView(MessageView.Message.class)
     @Column(name = "message")
     private String message;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_message_id", referencedColumnName = "id")
-    private Users userMessageId;
+    @JsonView(MessageView.Message.class)
+    @Column(name = "user_message_id")
+    private Integer userMessageId;
 
     public Integer getId() {
         return id;
     }
 
-    public Users getUsersId() {
+    public Integer getUsersId() {
         return usersId;
     }
 
-    public void setUsersId(Users usersId) {
+    public void setUsersId(Integer usersId) {
         this.usersId = usersId;
     }
 
@@ -37,11 +42,11 @@ public class Messages {
         this.message = message;
     }
 
-    public Users getUserMessageId() {
+    public Integer getUserMessageId() {
         return userMessageId;
     }
 
-    public void setUserMessageId(Users userMessageId) {
+    public void setUserMessageId(Integer userMessageId) {
         this.userMessageId = userMessageId;
     }
 }

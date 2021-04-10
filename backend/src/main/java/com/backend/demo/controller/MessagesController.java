@@ -1,8 +1,11 @@
 package com.backend.demo.controller;
 
 import com.backend.demo.controller.api.BaseControllerApi;
+import com.backend.demo.controller.views.MessageView;
 import com.backend.demo.dto.Messages;
+import com.backend.demo.model.MessagesPostRequest;
 import com.backend.demo.service.MessagesService;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
@@ -25,9 +28,10 @@ public class MessagesController extends BaseControllerApi<MessagesService> {
     }
 
     @CrossOrigin
+    @JsonView(MessageView.Message.class)
     @PostMapping(path = URL_POST_MESSAGE, produces = {"application/json"})
-    public Messages postMessage(@PathVariable @NotNull Integer id, @RequestBody @NotNull String message) {
-        return getService().portMessage(id, message);
+    public Messages postMessage(@RequestBody @NotNull MessagesPostRequest messagesPostRequest) {
+        return getService().postMessage(messagesPostRequest);
     }
 
 }

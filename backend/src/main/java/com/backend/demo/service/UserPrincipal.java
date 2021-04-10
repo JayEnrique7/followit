@@ -1,6 +1,7 @@
 package com.backend.demo.service;
 
 import com.backend.demo.dto.Session;
+import com.backend.demo.dto.Users;
 import com.backend.demo.exceptions.NotFoundException;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ public class UserPrincipal implements UserDetails {
 
     private Session session;
     @Autowired
-    private SessionService sessionService;
+    private UsersService usersService;
 
     public UserPrincipal(Session session) {
         this.session = session;
@@ -36,7 +37,8 @@ public class UserPrincipal implements UserDetails {
         if (session == null) {
             throw new NotFoundException("the session not exist!");
         }
-        return session.getUsers().getCredentials().getCredential();
+        Users users = usersService.findUserById(session.getUsersId());
+        return users.getCredentials().getCredential();
     }
 
     @Override

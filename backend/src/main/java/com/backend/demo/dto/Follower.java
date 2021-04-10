@@ -9,30 +9,28 @@ public class Follower {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_following_id", referencedColumnName = "id")
-    private Users usersFollowing;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_follower_id", referencedColumnName = "id")
-    private Users userFollower;
+    @Column(name = "users_id")
+    private Integer usersId;
+    @Column(name = "follower_id")
+    private Integer followerId;
 
     public Integer getId() {
         return id;
     }
 
-    public Users getUsersFollowing() {
-        return usersFollowing;
+    public Integer getUsersId() {
+        return usersId;
     }
 
-    public void setUsersFollowing(Users usersFollowing) {
-        this.usersFollowing = usersFollowing;
+    public void setUsersId(Integer usersId) {
+        this.usersId = usersId;
     }
 
-    public Users getUserFollower() {
-        return userFollower;
+    public Integer getFollowerId() {
+        return followerId;
     }
 
-    public void setUserFollower(Users userFollower) {
-        this.userFollower = userFollower;
+    public void setFollowerId(Integer followerId) {
+        this.followerId = followerId;
     }
 }

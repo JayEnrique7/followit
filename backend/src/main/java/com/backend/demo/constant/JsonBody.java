@@ -1,4 +1,4 @@
-package com.backend.demo.model;
+package com.backend.demo.constant;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

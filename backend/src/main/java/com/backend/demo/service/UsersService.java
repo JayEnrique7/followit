@@ -6,6 +6,8 @@ import com.backend.demo.exceptions.UnauthorizedException;
 import com.backend.demo.repository.UsersRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.stream.StreamSupport;
+
 @Service
 public class UsersService {
 
@@ -16,10 +18,10 @@ public class UsersService {
     }
 
     public Users findUserByEmail(String email) {
-        if (usersRepository.findUsersByEmail(email).iterator().hasNext()) {
-            return usersRepository.findUsersByEmail(email).iterator().next();
-        }
-        throw new UnauthorizedException("Authentication required");
+        return usersRepository.findUsersByEmail(email)
+                .orElseThrow(() -> {
+                    throw new UnauthorizedException("Authentication required");}
+                    );
     }
 
     public Users findUserById(Integer id) {
