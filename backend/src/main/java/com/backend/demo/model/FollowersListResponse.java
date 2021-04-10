@@ -11,10 +11,7 @@ import java.util.List;
 public class FollowersListResponse {
     @Setter
     @Getter
-    List<Users> usersFollow;
-    @Setter
-    @Getter
-    Integer usersFollowSize;
+    Users users;
     @Setter
     @Getter
     List<Users> userFollowing;
@@ -22,9 +19,8 @@ public class FollowersListResponse {
     @Getter
     Integer getUsersFollowerSize;
 
-    public FollowersListResponse(List<Users> usersFollow, Integer usersFollowSize, List<Users> userFollowing, Integer getUsersFollowerSize) {
-        this.usersFollow = usersFollow;
-        this.usersFollowSize = usersFollowSize;
+    public FollowersListResponse(Users users, List<Users> userFollowing, Integer getUsersFollowerSize) {
+        this.users = users;
         this.userFollowing = userFollowing;
         this.getUsersFollowerSize = getUsersFollowerSize;
     }

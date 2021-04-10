@@ -1,7 +1,7 @@
 package com.backend.demo.controller;
 
 import com.backend.demo.controller.api.BaseControllerApi;
-import com.backend.demo.model.FollowersListResponse;
+import com.backend.demo.model.FollowListResponse;
 import com.backend.demo.service.FollowerService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +18,7 @@ public class FollowerController extends BaseControllerApi<FollowerService> {
 
     @CrossOrigin
     @GetMapping(value = URL_FOLLOW_LIST, produces = {"application/json"})
-    public FollowersListResponse getAllFollower(@PathVariable @NotNull Integer id) {
+    public FollowListResponse getAllFollower(@PathVariable @NotNull Integer id) {
         return getService().response(id);
     }
 }

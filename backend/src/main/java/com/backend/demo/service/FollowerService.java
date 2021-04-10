@@ -3,6 +3,7 @@ package com.backend.demo.service;
 import com.backend.demo.dto.Follower;
 import com.backend.demo.dto.Users;
 import com.backend.demo.exceptions.NotFoundException;
+import com.backend.demo.model.FollowListResponse;
 import com.backend.demo.model.FollowersListResponse;
 import com.backend.demo.repository.FollowerRepository;
 
@@ -22,24 +23,30 @@ public class FollowerService {
         this.usersService = usersService;
     }
 
-    public FollowersListResponse response(Integer id) {
+    public FollowListResponse response(Integer id) {
         List<Follower> followerList = followerRepository.findFollowerByUsersId(id);
-        if(followerList.isEmpty()) {
+        List<Follower> followingList = followerRepository.findFollowerByFollowerId(id);
+        if(followerList.isEmpty() && followingList.isEmpty()) {
             throw new NotFoundException("Empty Follows");
         }
-        List<Users> follow = new ArrayList<>();
         List<Users> follower = new ArrayList<>();
+        List<Users> following = new ArrayList<>();
 
         for (Follower f : followerList) {
-            follow.add(getUser(f.getUsersId()));
             follower.add(getUser(f.getFollowerId()));
         }
 
+        for (Follower f : followingList) {
+            following.add(getUser(f.getFollowerId()));
+        }
 
-        return new FollowersListResponse(follow, follow.size(), follower, follower.size());
+        return new FollowListResponse(follower, follower.size(), following, following.size());
     }
 
     private Users getUser(Integer id) {
+        Users users = usersService.findUserById(id);
+        users.setCredentials(null);
+        users.setInfo(null);
         return usersService.findUserById(id);
     }
 
