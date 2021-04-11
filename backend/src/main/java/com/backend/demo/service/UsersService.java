@@ -23,22 +23,19 @@ public class UsersService {
     }
 
     public ProfileResponse profileResponse(Integer id) {
-        Boolean following = followerService.followerOptional(SessionUtil.getCurrentUser().getUsersId())
-                .stream()
-                .anyMatch(f -> f.getUsersId().equals(id));
-        return new ProfileResponse(usersDtoJsonById(id), following);
+        return new ProfileResponse(usersDtoJsonById(id), userIsFollower(id));
     }
 
     public Users findUserByEmail(String email) {
         return usersRepository.findUsersByEmail(email)
                 .orElseThrow(() -> {
-                    throw new UnauthorizedException("Authentication required");}
+                    throw new UnauthorizedException("the user doesn't exist!");}
                     );
     }
 
     public Users findUserById(Integer id) {
         return usersRepository.findUsersById(id).orElseThrow(
-                () -> new NotFoundException("the session not exist!")
+                () -> new NotFoundException("the user doesn't exist!")
         );
     }
 
@@ -50,5 +47,11 @@ public class UsersService {
     public UsersDtoJson usersDtoJsonById(Integer id) {
         Users users = findUserById(id);
         return new UsersDtoJson(users.getId(), users.getEmail(), users.getFirstName(), users.getLastName(), users.getInfo());
+    }
+
+    public Boolean userIsFollower(Integer id) {
+        return followerService.followerOptional(SessionUtil.getCurrentUser().getUsersId())
+                .stream()
+                .anyMatch(f -> f.getUsersId().equals(id));
     }
 }

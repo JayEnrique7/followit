@@ -1,9 +1,6 @@
 package com.backend.demo.exceptions.handling;
 
-import com.backend.demo.exceptions.NotFoundException;
-import com.backend.demo.exceptions.UnacceptableException;
-import com.backend.demo.exceptions.UnauthorizedException;
-import com.backend.demo.exceptions.UnexpectedErrorException;
+import com.backend.demo.exceptions.*;
 import com.backend.demo.exceptions.attributes.ExceptionResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,13 +48,24 @@ public class ExceptionHandlingController extends ResponseStatusExceptionHandler 
     }
 
     @ExceptionHandler(UnacceptableException.class)
-    public ResponseEntity<ExceptionResponse> hej(UnacceptableException ex) {
+    public ResponseEntity<ExceptionResponse> unacceptableException(UnacceptableException ex) {
         return new ResponseEntity<>(
                 exceptionResponse(
                         HttpStatus.NOT_ACCEPTABLE.value(),
                         HttpStatus.NOT_ACCEPTABLE.name(),
                         ex.getMessage()),
                 HttpStatus.NOT_ACCEPTABLE
+        );
+    }
+
+    @ExceptionHandler(ConflictAlreadyExistsException.class)
+    public ResponseEntity<ExceptionResponse> conflictAlreadyExistsException(ConflictAlreadyExistsException ex) {
+        return new ResponseEntity<>(
+                exceptionResponse(
+                        HttpStatus.CONFLICT.value(),
+                        HttpStatus.CONFLICT.name(),
+                        ex.getMessage()),
+                HttpStatus.CONFLICT
         );
     }
 
