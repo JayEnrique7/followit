@@ -1,6 +1,6 @@
 package com.backend.demo.model;
 
-import com.backend.demo.dto.Users;
+import com.backend.demo.controller.UsersDtoJson;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,18 +11,18 @@ import java.util.List;
 public class FollowListResponse {
     @Setter
     @Getter
-    List<Users> userFollower;
+    List<UsersDtoJson> userFollower;
     @Setter
     @Getter
     Integer followerSize;
     @Setter
     @Getter
-    List<Users> userFollowing;
+    List<UsersDtoJson> userFollowing;
     @Setter
     @Getter
     Integer followingSize;
 
-    public FollowListResponse(List<Users> userFollower, Integer followerSize, List<Users> userFollowing, Integer followingSize) {
+    public FollowListResponse(List<UsersDtoJson> userFollower, Integer followerSize, List<UsersDtoJson> userFollowing, Integer followingSize) {
         this.userFollower = userFollower;
         this.followerSize = followerSize;
         this.userFollowing = userFollowing;
