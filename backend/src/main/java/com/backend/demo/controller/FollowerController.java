@@ -21,4 +21,6 @@ public class FollowerController extends BaseControllerApi<FollowerService> {
     public FollowListResponse getAllFollower(@PathVariable @NotNull Integer id) {
         return getService().response(id);
     }
+
+
 }

@@ -2,7 +2,6 @@ package com.backend.demo.service;
 
 import com.backend.demo.controller.UsersDtoJson;
 import com.backend.demo.dto.Follower;
-import com.backend.demo.dto.Users;
 import com.backend.demo.exceptions.NotFoundException;
 import com.backend.demo.model.FollowListResponse;
 import com.backend.demo.repository.FollowerRepository;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FollowerService {
@@ -33,19 +33,17 @@ public class FollowerService {
         List<UsersDtoJson> following = new ArrayList<>();
 
         for (Follower f : followerList) {
-            follower.add(getUser(f.getFollowerId()));
+            follower.add(usersService.usersDtoJsonById(f.getFollowerId()));
         }
 
         for (Follower f : followingList) {
-            following.add(getUser(f.getFollowerId()));
+            following.add(usersService.usersDtoJsonById(f.getFollowerId()));
         }
 
         return new FollowListResponse(follower, follower.size(), following, following.size());
     }
 
-    private UsersDtoJson getUser(Integer id) {
-        Users users = usersService.findUserById(id);
-        return new UsersDtoJson(users.getId(), users.getEmail(), users.getFirstName(), users.getLastName(), users.getInfo());
+    public Optional<Follower> followerOptional(Integer id) {
+        return followerRepository.findByFollowerId(id);
     }
-
 }

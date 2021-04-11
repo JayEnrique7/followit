@@ -7,6 +7,6 @@ public interface PathConstant {
     String URL_LOGOUT = "/api/logout";
     String URL_GET_ALL_MESSAGES = "/api/messages/{id}";
     String URL_POST_MESSAGE = "/api/messages/post";
-    String URL_FOLLOW = "/api/follow/{id}";
+    String URL_GET_PROFILE = "/api/profile/{id}";
     String URL_FOLLOW_LIST = "/api/follow/list/{id}";
 }
