@@ -1,10 +1,12 @@
 package com.backend.demo.service;
 
-import com.backend.demo.controller.UsersDtoJson;
+import com.backend.demo.dto.Info;
+import com.backend.demo.model.UsersDtoJson;
 import com.backend.demo.dto.Users;
 import com.backend.demo.exceptions.NotFoundException;
 import com.backend.demo.exceptions.UnauthorizedException;
 import com.backend.demo.model.ProfileResponse;
+import com.backend.demo.model.UsersProfileEditRequest;
 import com.backend.demo.repository.UsersRepository;
 import com.backend.demo.utils.SessionUtil;
 import org.springframework.context.annotation.Lazy;
@@ -24,6 +26,19 @@ public class UsersService {
 
     public ProfileResponse profileResponse(Integer id) {
         return new ProfileResponse(usersDtoJsonById(id), userIsFollower(id));
+    }
+
+    public Users editProfile(UsersProfileEditRequest usersProfileEditRequest) {
+        Users users = findUserById(SessionUtil.getCurrentUser().getUsersId());
+        if (users.getInfo() == null) {
+            Info info = new Info();
+            info.setBio(usersProfileEditRequest.getBio());
+            users.setInfo(info);
+        } else {
+            users.getInfo().setBio(usersProfileEditRequest.getBio());
+        }
+        usersRepository.save(users);
+        return users;
     }
 
     public Users findUserByEmail(String email) {

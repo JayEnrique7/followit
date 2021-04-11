@@ -8,6 +8,7 @@ public interface PathConstant {
     String URL_GET_ALL_MESSAGES = "/api/messages/{id}";
     String URL_POST_MESSAGE = "/api/messages/post";
     String URL_GET_PROFILE = "/api/profile/{id}";
+    String URL_EDIT_PROFILE = "/api/user/profile/edit";
     String URL_FOLLOW_LIST = "/api/follow/list/{id}";
     String URL_FOLLOW_USER = "/api/follow/user/{id}";
     String URL_UNFOLLOW_USER = "/api/unfollow/user/{id}";

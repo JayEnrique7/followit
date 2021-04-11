@@ -1,6 +1,5 @@
 package com.backend.demo.model;
 
-import com.backend.demo.controller.UsersDtoJson;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;

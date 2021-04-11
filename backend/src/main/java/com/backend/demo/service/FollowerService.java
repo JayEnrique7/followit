@@ -1,6 +1,6 @@
 package com.backend.demo.service;
 
-import com.backend.demo.controller.UsersDtoJson;
+import com.backend.demo.model.UsersDtoJson;
 import com.backend.demo.dto.Follower;
 import com.backend.demo.exceptions.ConflictAlreadyExistsException;
 import com.backend.demo.exceptions.NotFoundException;

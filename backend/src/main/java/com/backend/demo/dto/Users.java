@@ -1,5 +1,7 @@
 package com.backend.demo.dto;
 
+import com.backend.demo.controller.views.UsersView;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
 
@@ -7,18 +9,24 @@ import javax.persistence.*;
 @Table(name = "users")
 public class Users {
 
+    @JsonView(UsersView.Info.class)
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+    @JsonView(UsersView.Info.class)
     @Column(name = "email")
     private String email;
+    @JsonView(UsersView.Info.class)
     @Column(name = "first_name")
     private String firstName;
+    @JsonView(UsersView.Info.class)
     @Column(name = "last_name")
     private String lastName;
+    @JsonView(UsersView.Info.class)
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "credential_id", referencedColumnName = "id")
     private Credentials credentials;
+    @JsonView(UsersView.Info.class)
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "info_id", referencedColumnName = "id")
     private Info info;

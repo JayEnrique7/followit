@@ -1,4 +1,4 @@
-package com.backend.demo.controller;
+package com.backend.demo.model;
 
 import com.backend.demo.dto.Info;
 
