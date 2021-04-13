@@ -1,7 +1,6 @@
 package com.backend.service;
 
 import com.backend.dto.Messages;
-import com.backend.dto.Users;
 import com.backend.exceptions.NotFoundException;
 import com.backend.exceptions.UnacceptableException;
 import com.backend.exceptions.UnauthorizedException;
@@ -37,13 +36,10 @@ public class MessagesService {
         if (messagesPostRequest.getMessage().isBlank() || messagesPostRequest.getMessage().isEmpty()) {
             throw new UnacceptableException("The message can't be blank");
         }
-        return createPost(
-                usersService.usersDtoJsonByEmail(messagesPostRequest.getUsername()),
-                messagesPostRequest.getMessage(),
-                usersService.usersDtoJsonById(SessionUtil.getCurrentUser().getUsersId()));
+        return createPost(usersService.usersDtoJsonByEmail(messagesPostRequest.getUsername()), messagesPostRequest.getMessage(), usersService.usersDtoJsonById(SessionUtil.getCurrentUser().getUsersId()));
     }
 
-    private MessagesPostResponse createPost(UsersDtoJson user, String message, UsersDtoJson userMessage) {
+    private MessagesPostResponse createPost(UsersDtoJson user, String message, UsersDtoJson userMessage ) {
         Messages messages = new Messages();
         messages.setUsersId(user.getId());
         messages.setMessage(message);
