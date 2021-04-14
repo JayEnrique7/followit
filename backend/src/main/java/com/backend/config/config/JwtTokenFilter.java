@@ -41,7 +41,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             if (authorizationHeader != null) {
                 String jwt = authorizationHeader.substring(7);
                 session = sessionService.findSessionByToken(jwt);
-                String username = verifyJWTService.getSub(jwt);
 
                 if (SecurityContextHolder.getContext().getAuthentication() == null) {
                     UserDetails userDetails = this.userDetail.loadUserByUsername(session.getUuid());

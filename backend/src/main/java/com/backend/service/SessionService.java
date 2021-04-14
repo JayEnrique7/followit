@@ -48,15 +48,9 @@ public class SessionService {
     private String createSession(Users users) {
         sessionRepository.findSessionByUsersId(users.getId()).ifPresent(sessionRepository::delete);
         String tokenUuid = UUID.randomUUID().toString();
-        Iterable<Session> tokenUUID;
-        while (true) {
-            tokenUUID = sessionRepository.findSessionByUuid(tokenUuid);
-            if(!tokenUUID.iterator().hasNext()) {
-                break;
-            }
+        while (sessionRepository.findSessionByUuid(tokenUuid).iterator().hasNext()) {
             tokenUuid = UUID.randomUUID().toString();
         }
-
         CreateJWT createJWT = new CreateJWT();
         String jwtToken = createJWT.createJWT(tokenUuid, false, users.getFirstName() + " " + users.getLastName(), users.getEmail());
 
@@ -71,7 +65,6 @@ public class SessionService {
     }
 
     public void logout(String jwt) {
-        System.out.println(userDetailsService);
         Session session = findSessionByToken(jwt.substring(7));
         sessionDelete(session);
     }

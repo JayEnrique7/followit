@@ -25,11 +25,10 @@ public class MessagesService {
     }
 
     public Optional<Messages> messages(Integer id) {
-        Optional<Messages> messages = messagesRepository.findMessagesByUsersId(id);
-        if(messages.isPresent()) {
-            return messages;
-        }
-        throw new NotFoundException("Empty messages!");
+        return Optional.of(messagesRepository.findMessagesByUsersId(id)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Empty messages!");
+                }));
     }
 
     public MessagesPostResponse postMessage(MessagesPostRequest messagesPostRequest) {

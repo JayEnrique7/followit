@@ -27,21 +27,15 @@ public class FollowerService {
         this.usersService = usersService;
     }
 
-    public FollowListResponse response(Integer id) {
-        List<Follower> followerList = followerRepository.findFollowerByUsersId(id);
-        List<Follower> followingList = followerRepository.findFollowerByFollowerId(id);
-        if(followerList.isEmpty() && followingList.isEmpty()) {
-            throw new NotFoundException("Empty Follows");
-        }
+    public FollowListResponse getAllFollows(Integer id) {
         List<UsersDtoJson> follower = new ArrayList<>();
         List<UsersDtoJson> following = new ArrayList<>();
 
-        for (Follower f : followerList) {
-            follower.add(usersService.usersDtoJsonById(f.getFollowerId()));
-        }
+        followerRepository.findFollowerByUsersId(id).forEach(f -> follower.add(usersService.usersDtoJsonById(f.getFollowerId())));
+        followerRepository.findFollowerByFollowerId(id).forEach(f -> following.add(usersService.usersDtoJsonById(f.getFollowerId())));
 
-        for (Follower f : followingList) {
-            following.add(usersService.usersDtoJsonById(f.getFollowerId()));
+        if(follower.isEmpty() && following.isEmpty()) {
+            throw new NotFoundException("Empty Follows");
         }
 
         return new FollowListResponse(follower, follower.size(), following, following.size());
@@ -66,12 +60,13 @@ public class FollowerService {
 
     public ProfileResponse unfollow(Integer id) {
         followingController(id);
-        Follower follower = followerRepository.findByFollowerId(SessionUtil.getCurrentUser().getUsersId())
-                .stream()
-                .filter(f -> f.getUsersId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> { throw new NotFoundException("The current user doesn't follow"); });
-        followerRepository.delete(follower);
+        followerRepository.delete(
+                followerRepository.findByFollowerId(SessionUtil.getCurrentUser().getUsersId())
+                        .stream()
+                        .filter(f -> f.getUsersId().equals(id))
+                        .findFirst()
+                        .orElseThrow(() -> { throw new NotFoundException("The current user doesn't follow"); })
+        );
         return new ProfileResponse(usersService.usersDtoJsonById(id), false);
     }
 

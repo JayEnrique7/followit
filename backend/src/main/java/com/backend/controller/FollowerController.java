@@ -19,7 +19,7 @@ public class FollowerController extends BaseControllerApi<FollowerService> {
     @CrossOrigin
     @GetMapping(value = PathConstant.URL_FOLLOW_LIST, produces = {"application/json"})
     public FollowListResponse getAllFollower(@PathVariable @NotNull Integer id) {
-        return getService().response(id);
+        return getService().getAllFollows(id);
     }
 
     @CrossOrigin
