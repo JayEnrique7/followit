@@ -1,5 +1,6 @@
 package com.backend.controller;
 
+import com.backend.config.utils.JsonBody;
 import com.backend.constant.PathConstant;
 import com.backend.controller.api.BaseControllerApi;
 import com.backend.dto.Users;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
 @RestController
+@CrossOrigin
 public class SessionController extends BaseControllerApi<SessionService> {
 
 
@@ -25,17 +27,11 @@ public class SessionController extends BaseControllerApi<SessionService> {
         return users;
     }
 
-    @CrossOrigin
     @PostMapping(value = PathConstant.URL_LOGIN, produces = {"application/json"})
-    public ResponseEntity<String> login(@RequestBody @NotNull SessionRequest sessionRequest) {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Authorization", getService().findCredentialId(sessionRequest));
-        return ResponseEntity.ok()
-                .headers(responseHeaders)
-                .body("");
+    public @ResponseBody String login(@RequestBody @NotNull SessionRequest sessionRequest) {
+        return "{\"token\": \"" + getService().findCredentialId(sessionRequest) + "\"}";
     }
 
-    @CrossOrigin
     @PostMapping(value = PathConstant.URL_LOGOUT, produces = {"application/json"})
     public void logout(HttpServletRequest request) {
         getService().logout(request.getHeader("Authorization"));

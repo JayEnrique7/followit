@@ -10,7 +10,6 @@ import com.backend.dto.Users;
 import com.backend.exceptions.UnauthorizedException;
 import com.backend.repository.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -19,7 +18,6 @@ import java.util.UUID;
 public class SessionService {
 
     @Autowired
-    UserDetailsService userDetailsService;
     private final SessionRepository sessionRepository;
     private final UsersService usersService;
     private final VerifyJWTService verifyJWTService;
@@ -61,7 +59,7 @@ public class SessionService {
         session.setToken(jwtToken);
         session.setDate(verifyJWTService.getExp(jwtToken));
         sessionRepository.save(session);
-        return jwtToken;
+        return session.getToken();
     }
 
     public void logout(String jwt) {
@@ -76,7 +74,9 @@ public class SessionService {
     }
 
     public void sessionDelete(Session session) {
-        sessionRepository.delete(session);
+        if (sessionRepository.findSessionByUsersId(session.getUsersId()).isPresent()) {
+            sessionRepository.delete(session);
+        }
     }
 
     public Session findUuid(String uuid) {
@@ -87,7 +87,7 @@ public class SessionService {
         throw new UnauthorizedException("Authentication required");
     }
 
-    public Session findSessionByUser(Integer userId) {
+    public Session findSessionByUserId(Integer userId) {
         return sessionRepository.findSessionByUsersId(userId).orElseThrow(
                 () -> new NotFoundException("the session not exist!")
         );

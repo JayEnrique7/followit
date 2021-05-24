@@ -13,25 +13,23 @@ import java.util.Optional;
 import static com.backend.constant.PathConstant.*;
 
 @RestController
+@CrossOrigin
 public class MessagesController extends BaseControllerApi<MessagesService> {
 
     public MessagesController(MessagesService service) {
         super(service);
     }
 
-    @CrossOrigin
     @GetMapping(path = URL_GET_ALL_MESSAGES, produces = {"application/json"})
     public Optional<Messages> message(@PathVariable @NotNull Integer id) {
         return getService().messages(id);
     }
 
-    @CrossOrigin
     @PostMapping(path = URL_POST_MESSAGE, produces = {"application/json"})
     public MessagesPostResponse postMessage(@RequestBody @NotNull MessagesPostRequest messagesPostRequest) {
         return getService().postMessage(messagesPostRequest);
     }
 
-    @CrossOrigin
     @DeleteMapping(path = URL_DELETE_MESSAGE, produces = {"application/json"})
     public void deleteMessage(@PathVariable @NotNull Integer id) {
         getService().deleteMsg(id);

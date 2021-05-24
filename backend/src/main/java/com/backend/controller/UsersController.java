@@ -19,7 +19,6 @@ public class UsersController extends BaseControllerApi<UsersService> {
         super(usersService);
     }
 
-    @CrossOrigin
     @GetMapping(value = PathConstant.URL_GET_PROFILE, produces = {"application/json"})
     public ProfileResponse getProfile(@PathVariable @NotNull Integer id) {
         return getService().profileResponse(id);

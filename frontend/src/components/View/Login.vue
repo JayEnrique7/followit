@@ -1,20 +1,47 @@
 <template>
+<form @submit.prevent="submit">
   <div>
-    <input type="text" v-model="username" placeholder="Username" style="width: 300px;">
+    <input type="text" v-model="form.email" placeholder="Username" style="width: 300px;">
     <br>
     <div class="descriptionarea">
-      <input type="password" v-model="password" placeholder="Password" style="width: 300px;">
+      <input type="password" v-model="form.secret" placeholder="Password" style="width: 300px;">
       <br>
       <span class="buttonfortxtarea">
-        <router-link to="/messages" tag="button" class="button button1">Log in</router-link>
+        <button type="submit" class="button button1">Log in</button>
       </span>
     </div>
   </div>
+</form>
 </template>
 
 <script>
+import axios from 'axios'
 export default {
-  
+  name: 'login',
+  data(){
+        return {
+            form: {
+                email: '',
+                secret: ''
+            }
+        }
+    },
+methods: {
+  submit() {
+    axios.post('http://localhost:8080/login', this.form).then((response) => {
+      window.localStorage.setItem('token', response.data.token);
+      window.localStorage.setItem('user', this.form.email);
+      if (response.status === 200) {
+      this.$router.push('profile');
+      }
+      this.$router.go();
+    }).catch(() => {
+      window.localStorage.removeItem('token')
+      window.localStorage.removeItem('user');
+      this.$router.go();
+    });
+    }
+}
 }
 </script>
 

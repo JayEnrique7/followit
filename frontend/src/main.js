@@ -1,13 +1,21 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import axios from 'axios'
 
 import App from './App.vue'
-import login from './components/View/login'
+import login from './components/View/Login'
 import profile from './components/View/profile'
 import follows from './components/View/follows'
 import messages from './components/View/messages'
 
 Vue.use(VueRouter)
+
+Vue.prototype.$http = axios;
+const token = localStorage.getItem('token')
+
+if (token) {
+  Vue.prototype.$http.defaults.headers.common['Authorization'] = 'Bearer ' + token
+}
 
 let routes = [
   { path: '/', name: 'login', component: login },
