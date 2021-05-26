@@ -8,6 +8,7 @@ import com.backend.model.SessionRequest;
 import com.backend.dto.Session;
 import com.backend.dto.Users;
 import com.backend.exceptions.UnauthorizedException;
+import com.backend.model.SessionResponse;
 import com.backend.repository.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,11 @@ public class SessionService {
         this.verifyJWTService = verifyJWTService;
     }
 
-    public String findCredentialId(SessionRequest sessionRequest) {
+    public SessionResponse loginResponse(SessionRequest sessionRequest) {
+        return new SessionResponse(usersService.usersDtoJsonByEmail(sessionRequest.getEmail()), findCredentialId(sessionRequest));
+    }
+
+    private String findCredentialId(SessionRequest sessionRequest) {
         Users users = usersService.findUserByEmail(sessionRequest.getEmail());
         if (secretReview(users.getCredentials().getCredential(), sessionRequest.getSecret())) {
             return createSession(users);

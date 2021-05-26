@@ -18,13 +18,15 @@ export default {
     },
 methods: {
   postToBackend() {
-    axios.post('http://localhost:8080/api/messages/post', {username: window.localStorage.getItem('user'), message: this.message}).then((response) => {
-     console.log(response)
-    }).catch((error) => {
+    axios.post('http://localhost:8080/api/messages/post', {
+        username: window.localStorage.getItem('user'),
+        message: this.message
+        }).then((response) => {
+        console.log(window.localStorage.getItem('id'));
+            console.log(response)
+            }).catch((error) => {
     console.log(error);
-    }
-    )
-    }
+    })}
 }
 }
 </script>

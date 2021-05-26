@@ -29,12 +29,13 @@ export default {
 methods: {
   submit() {
     axios.post('http://localhost:8080/login', this.form).then((response) => {
-      window.localStorage.setItem('token', response.data.token);
-      window.localStorage.setItem('user', this.form.email);
       if (response.status === 200) {
-      this.$router.push('profile');
+        window.localStorage.setItem('token', response.data.token);
+        window.localStorage.setItem('user', this.form.email);
+        window.localStorage.setItem('id', response.data.user.id);
+        this.$router.push('profile');
+        this.$router.go();
       }
-      this.$router.go();
     }).catch(() => {
       window.localStorage.removeItem('token')
       window.localStorage.removeItem('user');

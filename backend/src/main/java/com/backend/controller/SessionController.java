@@ -5,6 +5,7 @@ import com.backend.constant.PathConstant;
 import com.backend.controller.api.BaseControllerApi;
 import com.backend.dto.Users;
 import com.backend.model.SessionRequest;
+import com.backend.model.SessionResponse;
 import com.backend.service.SessionService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +29,8 @@ public class SessionController extends BaseControllerApi<SessionService> {
     }
 
     @PostMapping(value = PathConstant.URL_LOGIN, produces = {"application/json"})
-    public @ResponseBody String login(@RequestBody @NotNull SessionRequest sessionRequest) {
-        return "{\"token\": \"" + getService().findCredentialId(sessionRequest) + "\"}";
+    public SessionResponse login(@RequestBody @NotNull SessionRequest sessionRequest) {
+        return getService().loginResponse(sessionRequest);
     }
 
     @PostMapping(value = PathConstant.URL_LOGOUT, produces = {"application/json"})

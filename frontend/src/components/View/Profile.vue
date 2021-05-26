@@ -1,9 +1,9 @@
 <template>
     <div>
-      <router-link to="/" tag="button" class="logout">Logga ut</router-link>
+      <button @click="logout()" class="logout">Logga ut</button>
       <br>
-        <h1>Bo Dahl</h1>
-        <button @click="postToBackend()" class="button button1">Follow Bosse</button>
+      <h1>{{ name }}</h1>
+        <button @click="follow()" class="button button1">{{ followName }}</button>
         <br>
         <br>
         <p>
@@ -25,20 +25,44 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   name: 'profile',
-  data: function() {
-    return {
-      messages: [],
-      newMessage: ''
-    }
-  },
+  data() {
+        return {
+          name: '',
+          followName: '',
+          messages: [],
+          newMessage: '',
+        }
+    },
+    mounted() {
+      axios.get('http://localhost:8080/api/profile/' + window.localStorage.getItem('id'))
+      .then(response => {
+        this.name = response.data.user.firstName + ' ' + response.data.user.lastName;
+        this.followName = 'Follow ' + response.data.user.firstName;
+      })
+      .catch(console.log)
+    },
   methods: {
-    postToBackend: function() {
-      fetch('http://ec2-13-53-45-17.eu-north-1.compute.amazonaws.com:8080/message?message='+this.newMessage, {method: 'POST'})
-      .then(response => response.json())
-      .then(data => console.log(data))
-      this.newMessage = '';
+    logout: function() {
+      axios.post('http://localhost:8080/api/logout')
+      .then(() => {
+        window.localStorage.removeItem('token');
+        window.localStorage.removeItem('user');
+        window.localStorage.removeItem('id');
+        this.$router.push('/');
+    }).catch(() => {
+        window.localStorage.removeItem('token');
+        window.localStorage.removeItem('user');
+        window.localStorage.removeItem('id');
+        this.$router.push('/');
+    });
+    },
+    follow: function() {
+      axios.put('http://localhost:8080/api/follow/user/' + window.localStorage.getItem('id'))
+      .then(response => console.log(response))
+      .catch(error => console.log(error.response.data.message))
     }
   }
 }

@@ -65,8 +65,11 @@ public class UsersService {
     }
 
     public Boolean userIsFollower(Integer id) {
-        return followerService.followerOptional(SessionUtil.getCurrentUser().getUsersId())
-                .stream()
-                .anyMatch(f -> f.getUsersId().equals(id));
+        if (id.equals(SessionUtil.getCurrentUser().getUsersId())) {
+            return followerService.isFollow(id, id);
+        }
+            return followerService.followerOptional(SessionUtil.getCurrentUser().getUsersId())
+                    .stream()
+                    .anyMatch(f -> f.getUsersId().equals(id));
     }
 }

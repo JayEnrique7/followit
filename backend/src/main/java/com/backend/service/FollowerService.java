@@ -42,7 +42,7 @@ public class FollowerService {
     }
 
     public ProfileResponse follow(Integer id) {
-        followingController(id);
+        alreadyFollow(SessionUtil.getCurrentUser().getUsersId(), id);
         Integer currentUserId = SessionUtil.getCurrentUser().getUsersId();
         followerRepository.findByFollowerId(currentUserId)
                 .stream()
@@ -59,7 +59,6 @@ public class FollowerService {
     }
 
     public ProfileResponse unfollow(Integer id) {
-        followingController(id);
         followerRepository.delete(
                 followerRepository.findByFollowerId(SessionUtil.getCurrentUser().getUsersId())
                         .stream()
@@ -68,6 +67,18 @@ public class FollowerService {
                         .orElseThrow(() -> { throw new NotFoundException("The current user doesn't follow"); })
         );
         return new ProfileResponse(usersService.usersDtoJsonById(id), false);
+    }
+
+    private void alreadyFollow(Integer userId, Integer follow) {
+        followerRepository.findFollowerByUsersId(userId).forEach(f -> {
+            if (f.getFollowerId().equals(follow)) {
+                throw new UnacceptableException("Already follow");
+            }
+        });
+    }
+
+    public boolean isFollow(Integer userId, Integer follow) {
+        return followerRepository.findFollowerByUsersId(userId).stream().anyMatch(f -> f.getFollowerId().equals(follow));
     }
 
     private void followingController(Integer id) {
