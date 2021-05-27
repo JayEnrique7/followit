@@ -2,13 +2,14 @@ package com.backend.controller;
 
 import com.backend.controller.api.BaseControllerApi;
 import com.backend.dto.Messages;
+import com.backend.model.MessagesAllResponse;
 import com.backend.model.MessagesPostRequest;
 import com.backend.model.MessagesPostResponse;
 import com.backend.service.MessagesService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
+import java.util.List;
 
 import static com.backend.constant.PathConstant.*;
 
@@ -21,7 +22,7 @@ public class MessagesController extends BaseControllerApi<MessagesService> {
     }
 
     @GetMapping(path = URL_GET_ALL_MESSAGES, produces = {"application/json"})
-    public Optional<Messages> message(@PathVariable @NotNull Integer id) {
+    public List<MessagesAllResponse> message(@PathVariable @NotNull Integer id) {
         return getService().messages(id);
     }
 

@@ -1,9 +1,11 @@
 package com.backend.service;
 
 import com.backend.dto.Messages;
+import com.backend.dto.Users;
 import com.backend.exceptions.NotFoundException;
 import com.backend.exceptions.UnacceptableException;
 import com.backend.exceptions.UnauthorizedException;
+import com.backend.model.MessagesAllResponse;
 import com.backend.model.MessagesPostRequest;
 import com.backend.model.MessagesPostResponse;
 import com.backend.model.utils.UsersDtoJson;
@@ -11,7 +13,8 @@ import com.backend.repository.MessagesRepository;
 import com.backend.utils.SessionUtil;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class MessagesService {
@@ -24,11 +27,13 @@ public class MessagesService {
         this.usersService = usersService;
     }
 
-    public Optional<Messages> messages(Integer id) {
-        return Optional.of(messagesRepository.findMessagesByUsersId(id)
-                .orElseThrow(() -> {
-                    throw new NotFoundException("Empty messages!");
-                }));
+    public List<MessagesAllResponse> messages(Integer id) {
+        List<MessagesAllResponse> messagesAllResponseList = new ArrayList<>();
+        messagesRepository.findMessagesByUsersId(id).forEach(m -> {
+            Users users = usersService.findUserById(m.getUserMessageId());
+            messagesAllResponseList.add(new MessagesAllResponse( users.getFirstName() + " " + users.getLastName(), m.getMessage()));
+        });
+        return messagesAllResponseList;
     }
 
     public MessagesPostResponse postMessage(MessagesPostRequest messagesPostRequest) {

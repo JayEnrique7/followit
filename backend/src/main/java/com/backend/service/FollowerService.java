@@ -32,7 +32,7 @@ public class FollowerService {
         List<UsersDtoJson> following = new ArrayList<>();
 
         followerRepository.findFollowerByUsersId(id).forEach(f -> follower.add(usersService.usersDtoJsonById(f.getFollowerId())));
-        followerRepository.findFollowerByFollowerId(id).forEach(f -> following.add(usersService.usersDtoJsonById(f.getFollowerId())));
+        followerRepository.findFollowerByFollowerId(id).forEach(f -> following.add(usersService.usersDtoJsonById(f.getUsersId())));
 
         if(follower.isEmpty() && following.isEmpty()) {
             throw new NotFoundException("Empty Follows");

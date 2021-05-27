@@ -16,13 +16,18 @@ export default {
                 message: ''
         }
     },
+    mounted() {
+    axios.get('http://localhost:8080/api/messages/' + window.localStorage.getItem('id'))
+    .then(response => {
+        console.log(response.data)
+    })
+    },
 methods: {
   postToBackend() {
     axios.post('http://localhost:8080/api/messages/post', {
         username: window.localStorage.getItem('user'),
         message: this.message
         }).then((response) => {
-        console.log(window.localStorage.getItem('id'));
             console.log(response)
             }).catch((error) => {
     console.log(error);
