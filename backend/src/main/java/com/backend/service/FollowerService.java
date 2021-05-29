@@ -59,13 +59,12 @@ public class FollowerService {
     }
 
     public ProfileResponse unfollow(Integer id) {
-        followerRepository.delete(
-                followerRepository.findByFollowerId(SessionUtil.getCurrentUser().getUsersId())
-                        .stream()
-                        .filter(f -> f.getUsersId().equals(id))
-                        .findFirst()
-                        .orElseThrow(() -> { throw new NotFoundException("The current user doesn't follow"); })
-        );
+        List<Follower> followerList = followerRepository.getFollowers(SessionUtil.getCurrentUser().getUsersId());
+        followerList.removeIf(f -> !f.getUsersId().equals(id));
+        if(followerList.isEmpty()) {
+            throw new NotFoundException("The current user doesn't follow");
+        }
+        followerList.forEach(followerRepository::delete);
         return new ProfileResponse(usersService.usersDtoJsonById(id), false);
     }
 

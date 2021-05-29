@@ -45,7 +45,9 @@ export default {
           newMessage: '',
           followers: 0,
           followings: 0,
-          bio: ''
+          bio: '',
+          followUser : false,
+          firstName: ''
         }
     },
     mounted() {
@@ -53,15 +55,12 @@ export default {
       .then(response => {
         this.bio = response.data.user.info.bio;
         this.name = response.data.user.firstName + ' ' + response.data.user.lastName;
-        this.followName = 'Follow ' + response.data.user.firstName;
+        this.followName = (response.data.follow ? 'UnFollow ' : 'Follow ') + response.data.user.firstName;
+        this.followUser = response.data.follow;
+        this.firstName = response.data.user.firstName;
       })
       .catch(console.log)
-      axios.get('http://localhost:8080/api/follow/list/' + window.localStorage.getItem('id'))
-      .then(response => {
-        this.followers = response.data.followerSize;
-        this.followings = response.data.followingSize;
-      })
-      .catch(console.log)
+      this.getFollows();
     },
   methods: {
     logout: function() {
@@ -79,17 +78,49 @@ export default {
     });
     },
     follow: function() {
+      if (!this.followUser) {
       axios.put('http://localhost:8080/api/follow/user/' + window.localStorage.getItem('id'))
-      .then(response => console.log(response))
-      .catch(error => console.log(error.response.data.message))
+      .then(() => {
+        this.followName = 'UnFollow ' + this.firstName;
+        this.followUser = true;
+        this.getFollows();
+        alert('Follow user!');
+      })
+      .catch(error => {
+        console.log(error.response.data.message)
+        alert('Denied!');
+      })
+      } else {
+      axios.put('http://localhost:8080/api/unfollow/user/' + window.localStorage.getItem('id'))
+      .then(() => {
+        this.followName = 'Follow ' + this.firstName;
+        this.followUser = false;
+        this.getFollows();
+        alert('Unfollow user!');
+      })
+      .catch(error => {
+        console.log(error.response.data.message)
+        alert('Denied!');
+      })
+      }
     },
     editBio: function() {
       axios.put('http://localhost:8080/api/user/profile/edit', {
       bio: this.bio
       })
+      .then(() => {
+        alert('Your profile is updated!');
+      }).catch(() => {
+        alert('Denied!');
+      })
+    },
+    getFollows: function() {
+      axios.get('http://localhost:8080/api/follow/list/' + window.localStorage.getItem('id'))
       .then(response => {
-        console.log(response.data)
-      }).catch(console.log)
+        this.followers = response.data.followerSize;
+        this.followings = response.data.followingSize;
+      })
+      .catch(console.log)
     }
   }
 }

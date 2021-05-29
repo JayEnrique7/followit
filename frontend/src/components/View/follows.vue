@@ -1,25 +1,38 @@
 <template>
 <div>
     <div class="listLeft">
-        <ul aria-label="Following:">
-            <li>Left Item 1</li>
-            <li>Left Item 2</li>
-            <li>Left Item 3</li>
-            <li>Left Item 4</li>
-            <li>Left Item 5</li>
+        <ul aria-label="Followers:">
+            <div v-for="(follow, index) in follows.userFollowing" :key="index">
+                <li>{{ follow.firstName }} {{ follow.lastName }}</li>
+            </div>
         </ul>
     </div>
     <div class="listRigh">
-        <ul aria-label="Followers:">
-            <li>Right Item 1</li>
-            <li>Right Item 2</li>
-            <li>Right Item 3</li>
-            <li>Right Item 4</li>
-            <li>Right Item 5</li>
+        <ul aria-label="Following:">
+            <div v-for="(follow, index) in follows.userFollower" :key="index">
+                <li>{{ follow.firstName }} {{ follow.lastName }}</li>
+            </div>
         </ul>
     </div>
 </div>
 </template>
+
+<script>
+import axios from 'axios'
+export default {
+  name: 'login',
+  data(){
+        return {
+                follows: []
+        }
+    },
+    mounted() {
+    axios.get('http://localhost:8080/api/follow/list/' + window.localStorage.getItem('id'))
+      .then(response => this.follows = response.data)
+      .catch(console.log)
+    }
+}
+</script>
 
 <style scoped>
 .listRight {
