@@ -31,7 +31,9 @@ public class MessagesService {
         List<MessagesAllResponse> messagesAllResponseList = new ArrayList<>();
         messagesRepository.findMessagesByUsersId(id).forEach(m -> {
             Users users = usersService.findUserById(m.getUserMessageId());
-            messagesAllResponseList.add(new MessagesAllResponse( users.getFirstName() + " " + users.getLastName(), m.getMessage()));
+            messagesAllResponseList.add(
+                    new MessagesAllResponse(
+                            users.getFirstName() + " " + users.getLastName(), m.getMessage()));
         });
         return messagesAllResponseList;
     }
@@ -40,7 +42,11 @@ public class MessagesService {
         if (messagesPostRequest.getMessage().isBlank() || messagesPostRequest.getMessage().isEmpty()) {
             throw new UnacceptableException("The message can't be blank");
         }
-        return createPost(usersService.usersDtoJsonByEmail(messagesPostRequest.getUsername()), messagesPostRequest.getMessage(), usersService.usersDtoJsonById(SessionUtil.getCurrentUser().getUsersId()));
+        return createPost(
+                usersService.usersDtoJsonByEmail(messagesPostRequest.getUsername()),
+                messagesPostRequest.getMessage(),
+                usersService.usersDtoJsonById(SessionUtil.getCurrentUser().getUsersId())
+        );
     }
 
     private MessagesPostResponse createPost(UsersDtoJson user, String message, UsersDtoJson userMessage ) {

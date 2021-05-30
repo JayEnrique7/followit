@@ -84,7 +84,6 @@ export default {
         this.followName = 'UnFollow ' + this.firstName;
         this.followUser = true;
         this.getFollows();
-        alert('Follow user!');
       })
       .catch(error => {
         console.log(error.response.data.message)
@@ -96,7 +95,6 @@ export default {
         this.followName = 'Follow ' + this.firstName;
         this.followUser = false;
         this.getFollows();
-        alert('Unfollow user!');
       })
       .catch(error => {
         console.log(error.response.data.message)

@@ -31,8 +31,11 @@ public class FollowerService {
         List<UsersDtoJson> follower = new ArrayList<>();
         List<UsersDtoJson> following = new ArrayList<>();
 
-        followerRepository.findFollowerByUsersId(id).forEach(f -> follower.add(usersService.usersDtoJsonById(f.getFollowerId())));
-        followerRepository.findFollowerByFollowerId(id).forEach(f -> following.add(usersService.usersDtoJsonById(f.getUsersId())));
+        followerRepository.findFollowerByUsersId(id)
+                .forEach(f -> follower.add(usersService.usersDtoJsonById(f.getFollowerId())));
+
+        followerRepository.findFollowerByFollowerId(id)
+                .forEach(f -> following.add(usersService.usersDtoJsonById(f.getUsersId())));
 
         if(follower.isEmpty() && following.isEmpty()) {
             throw new NotFoundException("Empty Follows");
@@ -59,12 +62,10 @@ public class FollowerService {
     }
 
     public ProfileResponse unfollow(Integer id) {
-        List<Follower> followerList = followerRepository.getFollowers(SessionUtil.getCurrentUser().getUsersId());
-        followerList.removeIf(f -> !f.getUsersId().equals(id));
-        if(followerList.isEmpty()) {
-            throw new NotFoundException("The current user doesn't follow");
-        }
-        followerList.forEach(followerRepository::delete);
+        Optional.of(followerRepository.getFollowers(id, SessionUtil.getCurrentUser().getUsersId()))
+                .filter(f -> !f.isEmpty())
+                .orElseThrow(() -> { throw new NotFoundException("The current user doesn't follow"); })
+                .forEach(followerRepository::delete);
         return new ProfileResponse(usersService.usersDtoJsonById(id), false);
     }
 
@@ -77,7 +78,9 @@ public class FollowerService {
     }
 
     public boolean isFollow(Integer userId, Integer follow) {
-        return followerRepository.findFollowerByUsersId(userId).stream().anyMatch(f -> f.getFollowerId().equals(follow));
+        return followerRepository.findFollowerByUsersId(userId)
+                .stream()
+                .anyMatch(f -> f.getFollowerId().equals(follow));
     }
 
     private void followingController(Integer id) {

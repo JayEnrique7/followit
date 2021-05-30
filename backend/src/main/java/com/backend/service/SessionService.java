@@ -23,14 +23,18 @@ public class SessionService {
     private final UsersService usersService;
     private final VerifyJWTService verifyJWTService;
 
-    public SessionService(SessionRepository sessionRepository, UsersService usersService, VerifyJWTService verifyJWTService) {
+    public SessionService(SessionRepository sessionRepository,
+                          UsersService usersService,
+                          VerifyJWTService verifyJWTService) {
         this.sessionRepository = sessionRepository;
         this.usersService = usersService;
         this.verifyJWTService = verifyJWTService;
     }
 
     public SessionResponse loginResponse(SessionRequest sessionRequest) {
-        return new SessionResponse(usersService.usersDtoJsonByEmail(sessionRequest.getEmail()), findCredentialId(sessionRequest));
+        return new SessionResponse(
+                usersService.usersDtoJsonByEmail(sessionRequest.getEmail()), findCredentialId(sessionRequest)
+        );
     }
 
     private String findCredentialId(SessionRequest sessionRequest) {
@@ -55,7 +59,12 @@ public class SessionService {
             tokenUuid = UUID.randomUUID().toString();
         }
         CreateJWT createJWT = new CreateJWT();
-        String jwtToken = createJWT.createJWT(tokenUuid, false, users.getFirstName() + " " + users.getLastName(), users.getEmail());
+        String jwtToken = createJWT.createJWT(
+                tokenUuid,
+                false,
+                users.getFirstName() + " " + users.getLastName(),
+                users.getEmail()
+        );
 
         Session session = new Session();
         session.setUuid(tokenUuid);

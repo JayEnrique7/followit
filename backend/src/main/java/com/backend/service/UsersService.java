@@ -56,12 +56,24 @@ public class UsersService {
 
     public UsersDtoJson usersDtoJsonByEmail(String email) {
         Users users = findUserByEmail(email);
-        return new UsersDtoJson(users.getId(), users.getEmail(), users.getFirstName(), users.getLastName(), users.getInfo());
+        return new UsersDtoJson(
+                users.getId(),
+                users.getEmail(),
+                users.getFirstName(),
+                users.getLastName(),
+                users.getInfo()
+        );
     }
 
     public UsersDtoJson usersDtoJsonById(Integer id) {
         Users users = findUserById(id);
-        return new UsersDtoJson(users.getId(), users.getEmail(), users.getFirstName(), users.getLastName(), users.getInfo());
+        return new UsersDtoJson(
+                users.getId(),
+                users.getEmail(),
+                users.getFirstName(),
+                users.getLastName(),
+                users.getInfo()
+        );
     }
 
     public Boolean userIsFollower(Integer id) {

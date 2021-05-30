@@ -12,6 +12,6 @@ public interface FollowerRepository extends CrudRepository<Follower, Integer> {
     List<Follower> findFollowerByUsersId(Integer id);
     List<Follower> findFollowerByFollowerId(Integer id);
     Optional<Follower> findByFollowerId(Integer id);
-    @Query(value = "SELECT * FROM follower WHERE follower_id = :id", nativeQuery = true)
-    List<Follower> getFollowers(@Param("id") Integer id);
+    @Query(value = "SELECT * FROM follower WHERE users_id = :users_id AND follower_id = :follower_id", nativeQuery = true)
+    List<Follower> getFollowers(@Param("users_id") Integer usersId, @Param("follower_id") Integer followerId);
 }

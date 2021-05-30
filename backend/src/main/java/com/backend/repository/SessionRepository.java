@@ -9,5 +9,4 @@ public interface SessionRepository extends CrudRepository<Session, String> {
     Optional<Session> findSessionByUsersId(int id);
     Iterable<Session> findSessionByUuid(String uuid);
     Optional<Session> findSessionByToken(String token);
-    Long removeByUsersId(int id);
 }
